@@ -1,0 +1,244 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Url from "../../../Url";
+
+const initialState = {
+  profile: undefined,
+  loading: false,
+  Registersuccess: false,
+  LoginSuccess: false,
+  errorMessage: "",
+  isError: false,
+};
+export const SignUp = createAsyncThunk(
+  "SignUp",
+  async (kwargs, { rejectWithValue }) => {
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    console.log(kwargs);
+    const body = JSON.stringify(kwargs);
+    const requestOptions = {
+      method: "POST",
+      headers: headers,
+      body: body,
+      redirect: "follow",
+    };
+    try {
+      const res = await fetch(`${Url}/account/register`, requestOptions);
+      if (!res.ok) {
+        console.log("Got an error");
+        return rejectWithValue(await res.json());
+      }
+      console.log("Deployed");
+      return await res.json();
+    } catch (error) {
+      return rejectWithValue("please check your internet connection");
+    }
+  }
+);
+export const SignIn = createAsyncThunk(
+  "Login",
+  async (kwargs, { rejectWithValue }) => {
+    const myheaders = new Headers();
+    myheaders.append("Content-Type", "application/json");
+    const body = JSON.stringify(kwargs);
+    const requestOptions = {
+      headers: myheaders,
+      method: "POST",
+      body: body,
+      redirect: "follow",
+    };
+    try {
+      const res = await fetch(`${Url}/account/login`, requestOptions);
+      if (!res.ok) {
+        return rejectWithValue(await res.json());
+      } else {
+        console.log(res.status);
+        return await res.json();
+      }
+    } catch (error) {
+      return rejectWithValue("Unexpected Error, please check your Internet");
+    }
+  }
+);
+export const getProfile = createAsyncThunk(
+  "getProfile",
+  async (_, { rejectWithValue }) => {
+    const token = await AsyncStorage.getItem("token");
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
+      redirect: "follow",
+    };
+    if (token) {
+      try {
+        const res = await fetch(`${Url}/account/profile`, requestOptions);
+        if (!res.ok) {
+          return rejectWithValue(await res.json());
+        }
+        return await res.json();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+);
+export const updateProfileImage = createAsyncThunk(
+  "updateProfileImage",
+  async (kwargs, { rejectWithValue }) => {
+    const token = await AsyncStorage.getItem("token");
+    const myheaders = new Headers();
+    myheaders.append("Authorization", `Token ${token}`);
+    myheaders.append("Content-Type", "multipart/form-data");
+    const formData = new FormData();
+    if (kwargs?.profile) {
+      formData.append("profile", {
+        uri: kwargs?.profile?.uri,
+        type: kwargs.profile?.mimeType,
+        name: kwargs.profile?.fileName,
+      });
+    } else {
+      formData.append("id_number", kwargs.id_number);
+      formData.append("id_card", {
+        uri: kwargs?.id_card?.uri,
+        type: kwargs.id_card?.mimeType,
+        name: kwargs.id_card?.fileName,
+      });
+      formData.append("selfie", {
+        uri: kwargs?.selfie?.uri,
+        type: kwargs.selfie?.mimeType,
+        name: kwargs.selfie?.fileName,
+      });
+    }
+
+    console.log(formData);
+    const requestOptions = {
+      headers: myheaders,
+      method: "PUT",
+      body: formData,
+      redirect: "follow",
+    };
+    try {
+      const res = await fetch(`${Url}/account/profile`, requestOptions);
+      if (!res.ok) {
+        return rejectWithValue(await res.json());
+      }
+      return await res.json();
+    } catch (error) {
+      return rejectWithValue("Unexpected Error, please check your Internet");
+    }
+  }
+);
+export const EditProfile = createAsyncThunk(
+  "EditProfile",
+  async (kwargs, { rejectWithValue }) => {
+    const token = await AsyncStorage.getItem("token");
+    const myheaders = new Headers();
+    myheaders.append("Authorization", `Token ${token}`);
+    myheaders.append("Content-Type", "application/json");
+
+    const body = JSON.stringify(kwargs);
+    const requestOptions = {
+      headers: myheaders,
+      method: "PUT",
+      body: body,
+      redirect: "follow",
+    };
+    try {
+      const res = await fetch(`${Url}/account/profile`, requestOptions);
+      console.log(await res.json());
+      if (!res.ok) {
+        return rejectWithValue(await res.json());
+      }
+      return await res.json();
+    } catch (error) {
+      return rejectWithValue("Unexpected Error, please check your Internet");
+    }
+  }
+);
+const AccountSlice = createSlice({
+  name: "Account",
+  initialState,
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(SignUp.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(SignUp.fulfilled, (state, action) => {
+        state.profile = action.payload;
+        state.Registersuccess = true;
+        // console.log(action.payload);
+        state.loading = false;
+      })
+      .addCase(SignUp.rejected, (state, action) => {
+        state.errorMessage = action.payload;
+
+        state.loading = false;
+      });
+    ///LOGIN reducers ////////////////////
+    builder
+      .addCase(SignIn.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(SignIn.fulfilled, (state, action) => {
+        AsyncStorage.setItem("token", action?.payload?.token);
+        console.log("fulfilled", action.payload);
+        state.profile = action.payload.user;
+        state.LoginSuccess = true;
+        state.loading = false;
+      })
+      .addCase(SignIn.rejected, (state, action) => {
+        console.log("rejected", action.payload.detail);
+        state.isError = true;
+        state.errorMessage = action.payload.detail;
+        state.loading = false;
+      });
+
+    //GET PROFILE
+    builder
+      .addCase(getProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.profile = action.payload;
+        state.loading = false;
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        state.isError = true;
+        state.errorMessage = action.payload.detail;
+        state.loading = false;
+      });
+    //UPDATE Profile
+    builder
+      .addCase(EditProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(EditProfile.fulfilled, (state, action) => {
+        state.profile = action.payload;
+        state.loading = false;
+      })
+      .addCase(EditProfile.rejected, (state, action) => {
+        state.isError = true;
+        state.errorMessage = action.payload.detail;
+        state.loading = false;
+      });
+    builder.addCase(updateProfileImage.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(updateProfileImage.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.loading = false;
+    });
+    builder.addCase(updateProfileImage.rejected, (state, action) => {
+      state.isError = true;
+      state.errorMessage = action.payload.detail;
+      state.loading = false;
+    });
+  },
+});
+
+export default AccountSlice.reducer;
