@@ -1,11 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import Url from "../../../Url";
 
 const initialState = {
   products: [],
   loading: false,
   isError: false,
   categories: [],
+  colors: [],
   errorMessage: "",
 };
 export const FetchCategories = createAsyncThunk(
@@ -105,7 +107,31 @@ export const UploadProduct = createAsyncThunk(
     }
   }
 );
-
+//Get Colors
+export const FetchColors = createAsyncThunk(
+  "FetchColors",
+  async (_, { rejectWithValue }) => {
+    const header = new Headers();
+    header.append("Content-Type", "application/json");
+    const requestOptions = {
+      method: "GET",
+      headers: header,
+      redirect: "follow",
+    };
+    try {
+      const response = await fetch(`${Url}/product/colors`, requestOptions);
+      const data = await response.json();
+      if (!response.ok) {
+        return rejectWithValue(data);
+      } else {
+        return data;
+      }
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue("Unexpected Error");
+    }
+  }
+);
 const ProductSlice = createSlice({
   name: "Products",
   initialState,
@@ -147,6 +173,19 @@ const ProductSlice = createSlice({
         state.loading = false;
       })
       .addCase(UploadProduct.rejected, (state, action) => {
+        state.isError = true;
+        state.errorMessage = action.payload;
+        state.loading = false;
+      });
+    builder
+      .addCase(FetchColors.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(FetchColors.fulfilled, (state, action) => {
+        state.colors = action.payload.colors;
+        state.loading = false;
+      })
+      .addCase(FetchColors.rejected, (state, action) => {
         state.isError = true;
         state.errorMessage = action.payload;
         state.loading = false;

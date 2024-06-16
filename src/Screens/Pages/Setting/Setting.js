@@ -9,6 +9,7 @@ import {
   Dimensions,
   Modal,
   Switch,
+  Alert,
 } from "react-native";
 import { getProfile } from "../../../redux/Features/Account";
 import { useSelector, useDispatch } from "react-redux";
@@ -20,8 +21,12 @@ import { EditProfileSetting } from "./EditProfile";
 import { UploadDocuments } from "./UploadDocument";
 import { useTheme } from "../../components/Functions/ThemeProvider";
 import { useTranslation } from "react-i18next";
+import { GetUserShops, loading } from "../../../redux/Features/Shop";
+import Spinner from "react-native-loading-spinner-overlay";
+import { useNavigation } from "@react-navigation/native";
 const Setting = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const { t, i18n } = useTranslation();
   useEffect(() => {
     async function GetProfile() {
@@ -42,12 +47,22 @@ const Setting = () => {
   const { theme, toggleTheme } = useTheme();
   const isDarkMode = theme === "dark";
   const { profile } = useSelector((state) => state.Account);
+  const { Shops, loading } = useSelector((state) => state.Shops);
+  // console.log(Shops);
   const [editProfileModal, setEditProfileModal] = useState(false);
   const [verificationModal, setVerificationModal] = useState(false);
   const [changePasswordModal, setChangePasswordModal] = useState(false);
   const [deleteAccountModal, setDeleteAccountModal] = useState(false);
   const [changeLanguageModal, setchangeLanguageModal] = useState(false);
   const [uploadDocs, setUploadDocs] = useState(false);
+  const [shopsModal, setShopsModal] = useState(false);
+  const SwitchAccount = async () => {
+    const result = await dispatch(GetUserShops());
+    // console.log(result);
+    if (GetUserShops.fulfilled.match(result)) {
+      setShopsModal(true);
+    }
+  };
   return (
     <View
       className={`${
@@ -55,6 +70,7 @@ const Setting = () => {
       } flex-grow-1 flex-col flex-1`}
       style={styles.container}
     >
+      <Spinner visible={loading} color={Colors.appColor} size={32} />
       <ScrollView className="flex-1">
         <View className="items-center pt-14 mt-5">
           <Avatar
@@ -92,6 +108,15 @@ const Setting = () => {
         >
           <Text className="font-bold">Verified</Text>
           <Text>{profile?.user?.verified ? "Yes" : "No"}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.settingButton}
+          onPress={() => {
+            SwitchAccount();
+          }}
+        >
+          <Text className="font-bold">Switch Account</Text>
+          <Entypo name="chevron-right" size={24} color="black" />
         </TouchableOpacity>
         <View className="mt-12">
           <Text className="mx-4 font-bold text-gray-400">App Setting</Text>
@@ -253,6 +278,49 @@ const Setting = () => {
                 );
               })}
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/* Changing Account Modal */}
+      <Modal
+        className="flex-1"
+        transparent
+        visible={shopsModal}
+        animationType="slide"
+      >
+        <View
+          className="flex-1 flex flex-col "
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <View
+            className="absolute flex bottom-0 pl-4 py-4 w-full bg-white min-h-[20%] rounded-t-2xl"
+            style={{}}
+          >
+            <Text className="text-xl font-bold my-2">Choose Shop Account</Text>
+            {Shops?.shops?.map((item, index) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => {
+                    AsyncStorage.setItem("shop_id", item.id);
+                    navigation.navigate("ShopTab");
+                    setShopsModal(false);
+                  }}
+                  key={index}
+                  className="flex flex-row items-center my-1"
+                >
+                  <Avatar
+                    source={{ uri: item?.thumbnail }}
+                    rounded
+                    size="large"
+                    containerStyle={{
+                      borderWidth: 1,
+                      borderColor: Colors.appColor,
+                    }}
+                  />
+                  <Text className="mx-2 font-bold">{item?.name}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
       </Modal>

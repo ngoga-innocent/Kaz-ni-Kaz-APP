@@ -240,7 +240,7 @@ const Register = () => {
           className="self-end my-2 flex-row items-center"
         >
           <Text className="text-gray-400">Already Have an account</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Feather name="arrow-right" size={24} color={Colors.appColor} />
           </TouchableOpacity>
         </TouchableOpacity>

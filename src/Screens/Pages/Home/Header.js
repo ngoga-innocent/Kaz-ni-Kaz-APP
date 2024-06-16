@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useTheme } from "../../components/Functions/ThemeProvider";
@@ -8,8 +8,9 @@ export default Header = () => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const { wallet } = useSelector((state) => state.Wallet);
+  const { height } = Dimensions.get("screen");
   return (
-    <View>
+    <View className="" style={{ height: height * 0.13 }}>
       <View
         className={`flex-1 flex-row justify-between items-center  mb-2 ${
           isDarkMode ? "bg-black" : "bg-white"

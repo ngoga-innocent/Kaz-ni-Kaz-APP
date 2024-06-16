@@ -18,6 +18,8 @@ import * as Animatable from "react-native-animatable";
 import HomeNavigation from "../HomeNavigation";
 import Wallet from "../../Pages/Wallet/Wallet";
 import SettingNavigation from "../SettingNavigation";
+import { JobNavigation } from "../JobNavigation";
+import { NewsNavigation } from "../NewsNavigation";
 export default BottomTab = () => {
   const Tab = createBottomTabNavigator();
   const height = Dimensions.get("screen").height;
@@ -29,7 +31,7 @@ export default BottomTab = () => {
     },
     {
       route: "News",
-      component: Home,
+      component: NewsNavigation,
       icon: require("../../../../assets/icons/journalism.png"),
     },
     {
@@ -39,7 +41,7 @@ export default BottomTab = () => {
     },
     {
       route: "Jobs",
-      component: Home,
+      component: JobNavigation,
       icon: require("../../../../assets/icons/job-search.png"),
     },
     {

@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  Linking,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../../components/Global";
@@ -15,9 +17,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import * as Animated from "react-native-animatable";
 import { Avatar } from "react-native-elements";
+import * as SMS from "expo-sms";
+import { useNavigation } from "@react-navigation/native";
 const SingleProduct = ({ route }) => {
   //console.log("selected Product", route?.params?.product);
   const viewRef = useRef();
+  const navigation = useNavigation();
   const product_desc = ["Description", "Shop/Seller"];
   const { width, height } = Dimensions.get("screen");
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -27,6 +32,7 @@ const SingleProduct = ({ route }) => {
     const index = Math.round(contentOffsetX / Dimensions.get("screen").width);
     setFocusedIndex(index);
   };
+
   const product = route?.params?.product;
 
   const [focusedIndex, setFocusedIndex] = useState(
@@ -40,7 +46,38 @@ const SingleProduct = ({ route }) => {
   //   const scrollToX = index * Dimensions.get("screen").width;
   //   viewRef.current.scrollTo({ x: scrollToX, animated: true });
   // };
-
+  const sendSms = async (phone_number) => {
+    const isAvailable = await SMS.isAvailableAsync();
+    console.log(phone_number);
+    if (isAvailable) {
+      await SMS.sendSMSAsync(phone_number, "Kaz ni Kaz Request Support");
+    }
+  };
+  const phoneCall = async (phone_number) => {
+    if (Platform.OS === "android") {
+      try {
+        const supported = await Linking.canOpenURL(`tel:${phone_number}`);
+        if (supported) {
+          await Linking.openURL(`tel:${phone_number}`);
+        } else {
+          console.log("Can't handle url");
+        }
+      } catch (e) {
+        console.log("Error", e);
+      }
+    } else {
+      try {
+        const supported = await Linking.canOpenURL(`telprompt:${phone_number}`);
+        if (supported) {
+          await Linking.openURL(`telprompt:${phone_number}`);
+        } else {
+          console.log("Can't handle url");
+        }
+      } catch (e) {
+        console.log("Error", e);
+      }
+    }
+  };
   return (
     <ScrollView
       className="flex-1 "
@@ -51,7 +88,14 @@ const SingleProduct = ({ route }) => {
     >
       <View>
         <View className="flex flex-row bg-white pt-14 pb-3 items-center justify-between px-4">
-          <TouchableOpacity className="bg-black px-2 py-2 rounded-md">
+          <TouchableOpacity
+            className="bg-black px-2 py-2 rounded-md"
+            onPress={() =>
+              navigation.navigate("Home", {
+                screen: "Homepage",
+              })
+            }
+          >
             {/* <Ionicons name="caret-back" size={24} color={Colors.appColor} /> */}
             <Ionicons name="chevron-back" size={24} color={Colors.primary} />
           </TouchableOpacity>
@@ -214,17 +258,17 @@ const SingleProduct = ({ route }) => {
           onPress={() => setContactUs(!contactUs)}
           className="py-3 bg-appColor  mb-8 items-center w-[100%] self-center rounded-md border border-white"
         >
-          <Text className="text-white font-bold text-lg">Contact Us</Text>
+          <Text className="text-white font-bold text-lg">Get In Touch</Text>
         </TouchableOpacity>
       </View>
 
       {contactUs && (
         <Animated.View
           // transition="opacity"
-          transition="fadeIn"
-          delay={2000}
-          easing="ease-in-cubic"
-          duration={5000}
+          animation="slideInDown"
+          // delay={2000}
+          easing="ease-in-out"
+          duration={2000}
           className="absolute px-4 z-20 py-2 rounded-md bottom-11 right-4"
           style={{
             backgroundColor: "rgba(0,0,0,0.4) ",
@@ -232,15 +276,25 @@ const SingleProduct = ({ route }) => {
             elevation: 0,
           }}
         >
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(
+                `whatsapp://send?text=Kaz ni Kaz request&phone=25${product?.uploader?.phone_number}`
+              )
+            }
+          >
             <FontAwesome name="whatsapp" size={40} color="green" />
           </TouchableOpacity>
           <View className="h-1 w-[100%] bg-black" />
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => sendSms(product?.uploader?.phone_number)}
+          >
             <MaterialIcons name="message" size={40} color="blue" />
           </TouchableOpacity>
           <View className="h-1 w-[100%] bg-black my-1 " />
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => phoneCall(product?.uploader?.phone_number)}
+          >
             <Feather name="phone-call" size={40} color="#1d588d" />
           </TouchableOpacity>
           <View className="h-1 w-[100%] bg-black mt-1" />

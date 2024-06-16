@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
+  ImageBackground,
 } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Colors } from "../../components/Global";
@@ -16,6 +17,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "react-native-elements";
 import { FetchWallet } from "../../../redux/Features/WalletSlice";
+import { getProfile } from "../../../redux/Features/Account";
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "../../components/Functions/ThemeProvider";
@@ -48,6 +50,7 @@ const Home = () => {
     dispatch(FetchProduct());
     dispatch(FetchCategories());
     dispatch(FetchWallet());
+    dispatch(getProfile());
   }, [dispatch]);
   const handlePageChange = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -160,6 +163,47 @@ const Home = () => {
             );
           })}
         </View>
+        <View className="border w-[90%] self-center rounded-xl my-2 mt-7 py-2 relative">
+          <View className="w-32 h-32 absolute -top-14 self-center">
+            <Image
+              source={require("../../../../assets/icons/logo.png")}
+              className="w-[100%] h-[100%]"
+            />
+          </View>
+          <View className="flex flex-row justify-between px-5 my-2">
+            <Text className="font-bold text-lg">Sure Deals</Text>
+            <View className="mr-5 ">
+              <View className="flex flex-row items-center">
+                <Text className="text-blue-600 font-bold">K</Text>
+                <Text className="text-appColor font-bold">A</Text>
+                <Text className="font-bold">Z</Text>
+              </View>
+              <View className="flex flex-row items-center gap-x-1 ml-2">
+                <View className="flex flex-row items-center">
+                  <Text className="text-gray-600 font-bold">NI</Text>
+                </View>
+                <View className="flex flex-row items-center">
+                  <Text className="text-blue-600 font-bold">KA</Text>
+                  <Text className="text-gray-700 font-bold">Z</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          <View className="flex flex-row items-center justify-between w-[80%] self-center">
+            <TouchableOpacity className=" border py-2 items-center w-[30%] rounded-xl">
+              <View className="flex flex-row items-center">
+                <Text className="text-blue-950 font-bold">Re</Text>
+                <Text className="text-appColor font-bold">gister</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity className=" border py-2 items-center w-[30%] rounded-xl">
+              <View className="flex flex-row items-center">
+                <Text className="font-bold text-appColor">Sign</Text>
+                <Text className="font-bold">In</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
         {/* Categories Sections */}
         <View className="flex flex-row py-2 items-center justify-between">
           <Text className="text-xl font-bold">Categories</Text>
@@ -174,24 +218,27 @@ const Home = () => {
             <Text className="text-xl text-appColor font-bold">Sell All</Text>
           </TouchableOpacity>
         </View>
+
         <View className="items-center">
           <ScrollView
-            horizontal
-            className="gap-x-2"
+            className="gap-x-2 gap-y-1 flex  flex-wrap"
             contentContainerStyle={{
               alignItems: "center",
               justifyContent: "center",
+
+              flexDirection: "row",
+              flexWrap: "wrap",
             }}
           >
-            {categories?.map((item, index) => {
+            {categories?.slice(0, 8)?.map((item, index) => {
               return (
                 <TouchableOpacity
                   key={index}
-                  className="items-center self-center"
+                  className="items-center self-center w-[20%]"
                 >
                   <Avatar
                     source={{ uri: item.thumbnail }}
-                    size="large"
+                    size="medium"
                     rounded
                   />
                   <Text className={`${isDarkMode ? "text-white" : null}`}>
@@ -204,7 +251,16 @@ const Home = () => {
         </View>
         <View className="flex flex-row justify-between py-2">
           <Text className="text-xl font-bold">Best Sells</Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Home", {
+                screen: "allProduct",
+                params: {
+                  products: products,
+                },
+              })
+            }
+          >
             <Text className="text-lg font-bold text-appColor">Sell All</Text>
           </TouchableOpacity>
         </View>
@@ -224,13 +280,27 @@ const Home = () => {
                   })
                 }
                 key={index}
-                className="pb-3 rounded-lg  mx-1 my-2 bg-white"
+                className="rounded-lg  mx-1 my-2 bg-white relative overflow-hidden"
                 style={{
                   width: Dimensions.get("window").width / 2.28,
                   height: Dimensions.get("screen").height / 5,
                 }}
               >
-                <Image
+                <View className="absolute z-40 right-3">
+                  <Text>Favorite</Text>
+                </View>
+                <ImageBackground
+                  source={{ uri: item.thumbnail }}
+                  resizeMode="cover"
+                  className="flex-1 justify-end items-center rounded-lg"
+                  style={{
+                    height: "100%",
+                    width: "100%",
+
+                    flex: 1,
+                  }}
+                >
+                  {/* <Image
                   source={{ uri: item.thumbnail }}
                   className="w-[100%] rounded-lg"
                   style={{
@@ -238,13 +308,19 @@ const Home = () => {
                     borderRadius: 10,
                   }}
                   resizeMode="contain"
-                />
-                <View className="pt-5 pb-2 px-3">
-                  <Text className="font-bold">${item?.price}</Text>
-                  <Text className="font-bold text-gray-500 text-xs">
-                    {item?.name}
-                  </Text>
-                </View>
+                /> */}
+                  <View
+                    className="py-1 rounded-lg my-1 flex-col-reverse items-center gap-x-3 px-3 w-[90%] mx-auto"
+                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                  >
+                    <Text className="font-bold text-white ">
+                      ${item?.price}
+                    </Text>
+                    <Text className="font-bold  text-xs text-white">
+                      {item?.name}
+                    </Text>
+                  </View>
+                </ImageBackground>
               </TouchableOpacity>
             );
           })}
