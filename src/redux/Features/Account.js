@@ -61,6 +61,34 @@ export const SignIn = createAsyncThunk(
     }
   }
 );
+export const Logout = createAsyncThunk(
+  "Logout",
+  async (_, { rejectWithValue }) => {
+    const token = await AsyncStorage.getItem("token");
+    if (!token) {
+      return rejectWithValue("No Token Found");
+    }
+    const myheaders = new Headers();
+    myheaders.append("Authorization", `Token ${token}`);
+    const requestOptions = {
+      method: "DELETE",
+      headers: myheaders,
+      redirect: "follow",
+    };
+    try {
+      const response = await fetch(`${Url}/logout`, requestOptions);
+      if (!response.ok) {
+        return rejectWithValue(await response.json());
+      }
+      console.log(await response.json());
+      // AsyncStorage.removeItem("token");
+      return await response.json();
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue("Unexpected Error, please check your Internet");
+    }
+  }
+);
 export const getProfile = createAsyncThunk(
   "getProfile",
   async (_, { rejectWithValue }) => {
@@ -114,7 +142,7 @@ export const updateProfileImage = createAsyncThunk(
       });
     }
 
-    console.log(formData);
+    // console.log(formData);
     const requestOptions = {
       headers: myheaders,
       method: "PUT",
@@ -238,6 +266,21 @@ const AccountSlice = createSlice({
       state.errorMessage = action.payload.detail;
       state.loading = false;
     });
+
+    //LOGOUT
+    builder
+      .addCase(Logout.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(Logout.fulfilled, (state, action) => {
+        state.profile = action.payload;
+        state.loading = false;
+      })
+      .addCase(Logout.rejected, (state, action) => {
+        state.isError = true;
+        state.errorMessage = action.payload.detail;
+        state.loading = false;
+      });
   },
 });
 

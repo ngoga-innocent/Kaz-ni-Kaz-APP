@@ -22,10 +22,10 @@ const AllCategories = () => {
   const navigation = useNavigation();
 
   const SideCategory = categories?.filter((category) => !category.parent);
-
+  // console.log(products);
   const CategoryPress = (parent) => {
     const appended_categories = categories?.filter(
-      (category) => category?.parent?.id === parent.id
+      (category) => category?.parent === parent.id
     );
 
     if (appended_categories.length > 0) {
@@ -34,8 +34,9 @@ const AllCategories = () => {
     } else {
       console.log("no Appended");
       const category_products = products?.filter(
-        (product) => product.category.id === parent.id
+        (product) => product.category === parent
       );
+
       navigation.navigate("Home", {
         screen: "allProduct",
         params: {

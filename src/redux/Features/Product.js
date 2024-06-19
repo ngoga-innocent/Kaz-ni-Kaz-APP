@@ -84,7 +84,15 @@ export const UploadProduct = createAsyncThunk(
       });
     });
     // console.log(kwargs.uploaded_images);
-    formData.append("colors", "86482554-0033-47db-bcb9-fbf6b44364a5");
+    kwargs?.colors?.forEach((color) => {
+      formData.append("colors", color.id);
+    });
+    if (kwargs?.place) {
+      formData.append("place", kwargs.place);
+    }
+    if (kwargs?.discount) {
+      formData.append("discount", parseFloat(kwargs.discount));
+    }
     console.log(kwargs.categories);
     formData.append("category", kwargs.categories.id);
     const requestOptions = {

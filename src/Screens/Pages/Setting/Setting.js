@@ -11,7 +11,7 @@ import {
   Switch,
   Alert,
 } from "react-native";
-import { getProfile } from "../../../redux/Features/Account";
+import { Logout, getProfile } from "../../../redux/Features/Account";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar } from "react-native-elements";
 import { Colors } from "../../components/Global";
@@ -24,19 +24,24 @@ import { useTranslation } from "react-i18next";
 import { GetUserShops, loading } from "../../../redux/Features/Shop";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useNavigation } from "@react-navigation/native";
+
 const Setting = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
-  useEffect(() => {
-    async function GetProfile() {
-      const token = await AsyncStorage.getItem("token");
-      if (token) {
-        dispatch(getProfile());
-      }
-    }
-    GetProfile();
-  }, []);
+  // useEffect(() => {
+  //   async function GetProfile() {
+  //     const token = await AsyncStorage.getItem("token");
+  //     if (token) {
+  //       dispatch(getProfile());
+  //     }
+  //   }
+  //   GetProfile();
+  // }, []);
+  const LogoutFunction = async () => {
+    await AsyncStorage.removeItem("token");
+    navigation.navigate("logins");
+  };
   const language = [
     { name: "English", value: "en" },
     { name: "French", value: "fr" },
@@ -160,13 +165,23 @@ const Setting = () => {
         </View>
         <View className="my-14 w-[100%] self-center ">
           <Text className="text-gray-400 font-bold mx-4">Support</Text>
-          <TouchableOpacity style={styles.settingButton}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Chat", {
+                screen: "allChat",
+              })
+            }
+            style={styles.settingButton}
+          >
             <Text className="font-bold">Chat Support</Text>
             <AntDesign name="wechat" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <TouchableOpacity className="self-center my-2 py-3 ">
+      <TouchableOpacity
+        onPress={() => LogoutFunction()}
+        className="self-center my-2 py-3 "
+      >
         <Text className="text-red-700 font-bold text-lg">
           {profile ? "Sign Out" : "Login"}
         </Text>

@@ -27,7 +27,7 @@ export default BottomTab = () => {
     {
       route: "wallet",
       component: Wallet,
-      icon: require("../../../../assets/icons/settingsicon.png"),
+      icon: require("../../../../assets/icons/wallet.png"),
     },
     {
       route: "News",
@@ -37,7 +37,7 @@ export default BottomTab = () => {
     {
       route: "Home",
       component: HomeNavigation,
-      icon: require("../../../../assets/icons/settingsicon.png"),
+      icon: require("../../../../assets/icons/dashboard.png"),
     },
     {
       route: "Jobs",

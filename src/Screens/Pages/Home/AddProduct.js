@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   Dimensions,
   Alert,
   TextInput,
+  TouchableWithoutFeedback,
+  Modal,
 } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Colors } from "../../components/Global";
@@ -16,12 +18,21 @@ import { useSelector, useDispatch } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { UploadProduct } from "../../../redux/Features/Product";
+import {
+  FetchColors,
+  UploadProduct,
+  FetchProduct,
+} from "../../../redux/Features/Product";
 import { FetchWallet } from "../../../redux/Features/WalletSlice";
 import Spinner from "react-native-loading-spinner-overlay";
+import Toast from "react-native-toast-message";
+import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+
 const AddProduct = ({ navigation }) => {
   const dispatch = useDispatch();
   const { wallet } = useSelector((state) => state.Wallet);
+  const { colors } = useSelector((state) => state.Products);
   const { categories, loading } = useSelector((state) => state.Products);
   const { height, width } = Dimensions.get("screen");
   const [thumbnail, setThumbanail] = useState("");
@@ -32,11 +43,16 @@ const AddProduct = ({ navigation }) => {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [choosenCategory, setChoosenCategory] = useState();
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedPlace, setSelectedPlace] = useState();
+  const [discount, setDiscount] = useState();
+  const [shownCategories, setShownCategories] = useState(categories);
+  const Places = ["Normal", "Vip"];
   const ChooseThumbnail = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+
       quality: 1,
     });
     if (!result.canceled) {
@@ -45,6 +61,9 @@ const AddProduct = ({ navigation }) => {
       Alert.alert("Thumbanil Selection Cancelled");
     }
   };
+  useEffect(() => {
+    dispatch(FetchColors());
+  }, []);
   const AddOtherImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -76,18 +95,60 @@ const AddProduct = ({ navigation }) => {
           thumbnail: thumbnail,
           uploaded_images: otherImages,
           categories: choosenCategory,
+          colors: selectedColors,
+          place: selectedPlace,
+          discount: discount,
         })
       );
       if (UploadProduct.fulfilled.match(result)) {
         dispatch(FetchWallet());
         dispatch(FetchProduct());
+        Toast.show({
+          text1: "product Uploaded Successfully",
+          type: "success",
+          position: "top",
+          visibilityTime: 12000,
+          autoHide: true,
+          topOffset: 60,
+        });
+        navigation.navigate("BottomTab", {
+          screen: "home",
+        });
+      } else if (UploadProduct.rejected.match(result)) {
+        console.log("rejected with", result.payload);
+        Toast.show({
+          text1: result.payload.detail,
+          type: "error",
+          position: "top",
+          visibilityTime: 12000,
+          autoHide: true,
+          topOffset: 60,
+        });
       }
     } else {
       Alert.alert("Check empty Fields");
     }
   };
+  const handlePersist = (e) => {
+    e.stopPropagation();
+  };
+  const handleCategoryPress = (parent) => {
+    const childCategory = categories.filter(
+      (category) => category.parent == parent.id
+    );
+    if (childCategory.length > 0) {
+      setShownCategories(childCategory);
+    } else {
+      setChoosenCategory(parent);
+      setCategoryVisible(false);
+    }
+    console.log(childCategory);
+  };
   return (
     <SafeAreaView className="flex-1">
+      <View className="z-50">
+        <Toast />
+      </View>
       <Spinner visible={loading} color={Colors.appColor} size={30} />
       <ScrollView className="flex-1" stickyHeaderIndices={[0]}>
         <View>
@@ -212,33 +273,93 @@ const AddProduct = ({ navigation }) => {
             <AntDesign name="caretdown" size={20} color="black" />
           </TouchableOpacity>
           {categoryVisible && (
-            <ScrollView
-              className="h-32 flex-1  absolute z-50  bg-white w-full self-center overflow-scroll  rounded-lg shadow-md shadow-black"
-              //   contentContainerStyle={{
-              //     alignItems: "center",
-              //     flex: 1,
-              //   }}
-              style={{
-                top: CategoryPosition.y,
-              }}
-            >
-              <View>
-                {categories?.map((item, index) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setChoosenCategory(item);
-                        setCategoryVisible(!categoryVisible);
-                      }}
-                      key={index}
-                      className="py-1  w-[90%] my-1 items-center"
-                    >
-                      <Text>{item?.name}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </ScrollView>
+            <Modal className="flex-1" transparent animation="slide">
+              <TouchableWithoutFeedback
+                className="flex-1"
+                onPress={() => setCategoryVisible(false)}
+              >
+                <View
+                  className="flex-1 flex flex-col"
+                  style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                >
+                  <TouchableWithoutFeedback onPress={handlePersist}>
+                    <View className="bg-white h-[50%]  w-full absolute bottom-0 rounded-t-3xl items-center justify-center flex flex-col">
+                      <ScrollView className="w-[100%] py-4 max-h-[90%] overflow-y-scroll">
+                        {shownCategories.map((category, index) => {
+                          return (
+                            <TouchableOpacity
+                              onPress={() => handleCategoryPress(category)}
+                              className="w-[80%] self-center my-1 px-4 rounded-md py-3 bg-slate-300"
+                              key={index}
+                            >
+                              <Text>{category.name}</Text>
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </ScrollView>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
+            // <ScrollView
+            //   className="h-32 flex-1  absolute z-50  bg-white w-full self-center overflow-scroll  rounded-lg shadow-md shadow-black"
+            //   //   contentContainerStyle={{
+            //   //     alignItems: "center",
+            //   //     flex: 1,
+            //   //   }}
+            //   style={{
+            //     top: CategoryPosition.y,
+            //   }}
+            // >
+            //   <View>
+            //     {categories
+            //       ?.filter((category) => !category.parent)
+            //       ?.map((item, index) => {
+            //         return (
+            //           <TouchableOpacity
+            //             onPress={() => {
+            //               setChoosenCategory(item);
+            //               setCategoryVisible(!categoryVisible);
+            //             }}
+            //             key={index}
+            //             className="py-1  w-[90%] my-1 items-center"
+            //           >
+            //             <Text>{item?.name}</Text>
+            //           </TouchableOpacity>
+            //         );
+            //       })}
+            //   </View>
+            // </ScrollView>
+          )}
+          <Text>Choose Available Colors</Text>
+          {colors && (
+            <View className=" flex flex-row flex-wrap gap-2 py-2">
+              {colors?.map((color, index) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() =>
+                      selectedColors.includes(color)
+                        ? setSelectedColors(
+                            selectedColors.filter(
+                              (selected) => selected.id !== color.id
+                            )
+                          )
+                        : setSelectedColors([...selectedColors, color])
+                    }
+                    key={index}
+                    className={`rounded-full h-8 w-8 border items-center justify-center`}
+                    style={{
+                      backgroundColor: color.color,
+                    }}
+                  >
+                    {selectedColors?.includes(color) && (
+                      <Feather name="check" size={24} color="black" />
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           )}
           <TextInput
             className="border w-[100%] py-2 px-2 rounded-md my-1 "
@@ -248,6 +369,33 @@ const AddProduct = ({ navigation }) => {
             multiline
             value={description}
             onChangeText={(e) => setDescription(e)}
+          />
+          <Text className="font-bold">
+            Kaz ni Kaz wish to know how to classify your product please choose
+            one
+          </Text>
+          <View className="flex flex-row gap-x-2 my-2">
+            {Places?.map((place, index) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => setSelectedPlace(place)}
+                  className={`py-2 px-4 rounded-md ${
+                    selectedPlace == place ? "bg-appColor" : "bg-slate-400"
+                  }`}
+                  key={index}
+                >
+                  <Text>{place}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <TextInput
+            className="border w-[100%] py-2 px-2 rounded-md my-1 "
+            style={{}}
+            placeholder="Add Any Discount in %"
+            keyboardType="numeric"
+            value={discount}
+            onChangeText={(e) => setDiscount(e)}
           />
         </View>
         <TouchableOpacity

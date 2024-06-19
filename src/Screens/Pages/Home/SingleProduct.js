@@ -297,6 +297,18 @@ const SingleProduct = ({ route }) => {
           >
             <Feather name="phone-call" size={40} color="#1d588d" />
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Chat", {
+                screen: "chatHome",
+                params: {
+                  receiver_id: product?.uploader?.id,
+                },
+              })
+            }
+          >
+            <Text>Chat</Text>
+          </TouchableOpacity>
           <View className="h-1 w-[100%] bg-black mt-1" />
           <TouchableOpacity
             onPress={() => setContactUs(!contactUs)}

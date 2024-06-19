@@ -21,13 +21,17 @@ import { getProfile } from "../../../redux/Features/Account";
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "../../components/Functions/ThemeProvider";
+import { MaterialIcons } from "@expo/vector-icons";
+
 const Home = () => {
   const focused = useIsFocused();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [currentPage, setCurrentPage] = useState(0);
+  const [VipProducts, setVipProducts] = useState([]);
   const scrollViewRef = useRef();
   const { theme } = useTheme();
+  const isfocused = useIsFocused();
   const isDarkMode = theme === "dark";
   // Function to handle auto-sliding
   useEffect(() => {
@@ -51,7 +55,7 @@ const Home = () => {
     dispatch(FetchCategories());
     dispatch(FetchWallet());
     dispatch(getProfile());
-  }, [dispatch]);
+  }, [isfocused]);
   const handlePageChange = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const page = Math.round(offsetX / Dimensions.get("window").width);
@@ -63,6 +67,13 @@ const Home = () => {
   );
   const { wallet } = useSelector((state) => state.Wallet);
   // console.log(categories);
+  const { profile } = useSelector((state) => state.Account);
+  console.log("Home Profile", profile);
+  useEffect(() => {
+    if (products.length > 0) {
+      setVipProducts(products?.filter((product) => product?.place === "Vip"));
+    }
+  }, [products]);
   return (
     <SafeAreaView className={`flex-1 ${isDarkMode ? "bg-black" : null}`}>
       <Spinner visible={loading} size={30} color={Colors.appColor} />
@@ -120,7 +131,7 @@ const Home = () => {
             justifyContent: "center",
           }}
         >
-          {products?.map((item, index) => {
+          {VipProducts?.map((item, index) => {
             return (
               <View
                 key={index}
@@ -130,9 +141,7 @@ const Home = () => {
               >
                 <Image
                   source={{ uri: item?.thumbnail }}
-                  className={`rounded-lg bg-white shadow-sm shadow-black items-center self-center ${
-                    currentPage !== index ? "scale-75" : null
-                  }`}
+                  className={`rounded-lg bg-white shadow-sm shadow-black items-center self-center `}
                   resizeMode="cover"
                   style={{
                     width: Dimensions.get("window").width / 1.1,
@@ -145,7 +154,7 @@ const Home = () => {
           })}
         </ScrollView>
         <View className="flex flex-row gap-x-3 self-center my-2">
-          {products?.map((item, index) => {
+          {VipProducts?.map((item, index) => {
             return (
               <View
                 key={index}
@@ -163,7 +172,7 @@ const Home = () => {
             );
           })}
         </View>
-        <View className="border w-[90%] self-center rounded-xl my-2 mt-7 py-2 relative">
+        <View className="border w-[90%] self-center rounded-xl my-4 mt-9 py-2 relative">
           <View className="w-32 h-32 absolute -top-14 self-center">
             <Image
               source={require("../../../../assets/icons/logo.png")}
@@ -189,20 +198,43 @@ const Home = () => {
               </View>
             </View>
           </View>
-          <View className="flex flex-row items-center justify-between w-[80%] self-center">
-            <TouchableOpacity className=" border py-2 items-center w-[30%] rounded-xl">
-              <View className="flex flex-row items-center">
-                <Text className="text-blue-950 font-bold">Re</Text>
-                <Text className="text-appColor font-bold">gister</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity className=" border py-2 items-center w-[30%] rounded-xl">
-              <View className="flex flex-row items-center">
-                <Text className="font-bold text-appColor">Sign</Text>
-                <Text className="font-bold">In</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          {!profile ? (
+            <View className="flex flex-row items-center justify-between w-[80%] self-center">
+              <TouchableOpacity
+                className=" border py-2 items-center w-[30%] rounded-xl"
+                onPress={() =>
+                  navigation.navigate("logins", {
+                    screen: "Register",
+                  })
+                }
+              >
+                <View className="flex flex-row items-center">
+                  <Text className="text-blue-950 font-bold">Re</Text>
+                  <Text className="text-appColor font-bold">gister</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className=" border py-2 items-center w-[30%] rounded-xl"
+                onPress={() =>
+                  navigation.navigate("logins", {
+                    screen: "Login",
+                  })
+                }
+              >
+                <View className="flex flex-row items-center">
+                  <Text className="font-bold text-appColor">Sign</Text>
+                  <Text className="font-bold">In</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View className="self-center flex flex-row items-center gap-x-1 py-3">
+              <Text className="font-bold text-lg">Welcome </Text>
+              <Text className="font-bold text-lg">
+                {profile?.user?.username}
+              </Text>
+            </View>
+          )}
         </View>
         {/* Categories Sections */}
         <View className="flex flex-row py-2 items-center justify-between">
@@ -268,39 +300,47 @@ const Home = () => {
           className="flex-1 flex flex-row flex-wrap items-center justify-center pb-8"
           style={{ flexWrap: "wrap" }}
         >
-          {products?.map((item, index) => {
-            return (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("Home", {
-                    screen: "singleProduct",
-                    params: {
-                      product: item,
-                    },
-                  })
-                }
-                key={index}
-                className="rounded-lg  mx-1 my-2 bg-white relative overflow-hidden"
-                style={{
-                  width: Dimensions.get("window").width / 2.28,
-                  height: Dimensions.get("screen").height / 5,
-                }}
-              >
-                <View className="absolute z-40 right-3">
-                  <Text>Favorite</Text>
-                </View>
-                <ImageBackground
-                  source={{ uri: item.thumbnail }}
-                  resizeMode="cover"
-                  className="flex-1 justify-end items-center rounded-lg"
+          {products
+            ?.slice()
+            ?.reverse()
+            ?.slice(0, 50)
+            ?.map((item, index) => {
+              return (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Home", {
+                      screen: "singleProduct",
+                      params: {
+                        product: item,
+                      },
+                    })
+                  }
+                  key={index}
+                  className="rounded-lg  mx-1 my-2 bg-white relative overflow-hidden"
                   style={{
-                    height: "100%",
-                    width: "100%",
-
-                    flex: 1,
+                    width: Dimensions.get("window").width / 2.28,
+                    height: Dimensions.get("screen").height / 5,
                   }}
                 >
-                  {/* <Image
+                  <View className="absolute z-40 right-2 top-1 bg-white w-[32] h-[32] items-center justify-center rounded-full">
+                    <MaterialIcons
+                      name="favorite"
+                      size={24}
+                      color={Colors.appColor}
+                    />
+                  </View>
+                  <ImageBackground
+                    source={{ uri: item.thumbnail }}
+                    resizeMode="cover"
+                    className="flex-1 justify-end items-center rounded-lg"
+                    style={{
+                      height: "100%",
+                      width: "100%",
+
+                      flex: 1,
+                    }}
+                  >
+                    {/* <Image
                   source={{ uri: item.thumbnail }}
                   className="w-[100%] rounded-lg"
                   style={{
@@ -309,21 +349,21 @@ const Home = () => {
                   }}
                   resizeMode="contain"
                 /> */}
-                  <View
-                    className="py-1 rounded-lg my-1 flex-col-reverse items-center gap-x-3 px-3 w-[90%] mx-auto"
-                    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-                  >
-                    <Text className="font-bold text-white ">
-                      ${item?.price}
-                    </Text>
-                    <Text className="font-bold  text-xs text-white">
-                      {item?.name}
-                    </Text>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-            );
-          })}
+                    <View
+                      className="py-1 rounded-lg my-1 flex-col-reverse items-center gap-x-3 px-3 w-[90%] mx-auto"
+                      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                    >
+                      <Text className="font-bold text-white ">
+                        ${item?.price}
+                      </Text>
+                      <Text className="font-bold  text-xs text-white">
+                        {item?.name}
+                      </Text>
+                    </View>
+                  </ImageBackground>
+                </TouchableOpacity>
+              );
+            })}
         </View>
       </ScrollView>
       <TouchableOpacity
