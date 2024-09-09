@@ -1,27 +1,87 @@
 {
   "expo": {
-    "name": "kaz_nikaz",
-    "slug": "kaz_nikaz",
+    "name": "Kaz ni Kaz",
+    "slug": "KazniKaz",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#da9f21"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ngoga.KazniKaz",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "versionCode": 10,
+      "googleServicesFile": "./google-services.json",
+      "package": "com.ngoga.KazniKaz",
+      "permissions": [
+        "INTERNET",
+        "MODIFY_AUDIO_SETTINGS",
+        "READ_EXTERNAL_STORAGE",
+        "RECORD_AUDIO",
+        "SYSTEM_ALERT_WINDOW",
+        "VIBRATE",
+        "WRITE_EXTERNAL_STORAGE",
+        "com.google.android.c2dm.permission.RECEIVE"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "kaznikazapi.onrender.com"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "sounds": [
+            "./assets/kaznikaz.wav"
+          ]
+        }
+      ]
+    ],
+    
+    "extra": {
+      "eas": {
+        "projectId": "66a8cd4c-6c97-4a1d-9d6c-aaf358c8127b"
+      }
+    },
+    "scheme": "kaznikaz",
+    "runtimeVersion": "1.1.1",
+    "updates": {
+      "url": "https://u.expo.dev/66a8cd4c-6c97-4a1d-9d6c-aaf358c8127b"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }
