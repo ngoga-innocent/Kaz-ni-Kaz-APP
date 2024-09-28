@@ -1,15 +1,22 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { View, Text, TouchableOpacity, Image, Dimensions } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useTheme } from "../../components/Functions/ThemeProvider";
 import { Colors } from "../../components/Global";
 import { useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
+import { UpdateOnlineStatus } from "../../../redux/Features/Account";
 export default Header = () => {
+  const dispatch = useDispatch();
+  useEffect(()=>{
+    dispatch(UpdateOnlineStatus());
+    console.log('dispatched')
+  },[]);
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const { wallet } = useSelector((state) => state.Wallet);
+  // console.log(wallet)
   const { height } = Dimensions.get("screen");
   const navigation = useNavigation();
   async function SchedulePushNotification() {

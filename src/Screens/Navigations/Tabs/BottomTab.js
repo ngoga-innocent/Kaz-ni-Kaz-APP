@@ -102,8 +102,9 @@ const BottomTab = () => {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: height / 12,
-          backgroundColor:isDarkMode?'#171716':null
+          height: height / 11.5,
+          width:Dimensions.get('screen').width,
+          backgroundColor:isDarkMode?'#171716':'white'
         },
         tabBarHideOnKeyboard: true,
       }}

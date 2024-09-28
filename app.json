@@ -15,7 +15,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.ngoga.KazniKaz",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "entitlements": {
+        "aps-environment":"production"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -55,8 +58,9 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-
+      "expo-apple-authentication",
       "expo-localization",
+      "@react-native-google-signin/google-signin",
       [
         "expo-notifications",
         {

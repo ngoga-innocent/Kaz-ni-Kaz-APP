@@ -8,6 +8,8 @@ import {
   Image,
   Dimensions,
   RefreshControl,
+  Linking,
+  Platform
 } from "react-native";
 import Header from "../Home/Header";
 import { Ionicons } from "@expo/vector-icons";
@@ -23,9 +25,10 @@ import {
   SendChat,
 } from "../../../redux/Features/Chat";
 import * as ImagePicker from "expo-image-picker";
-
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { Video, ResizeMode } from "expo-av";
 import { Colors } from "../../components/Global";
+import { Avatar } from "react-native-elements";
 const Chat = ({ route }) => {
   //Use State
   const [message, setMessage] = useState(null);
@@ -34,8 +37,26 @@ const Chat = ({ route }) => {
   const [showFilePlacement, setFilePlacement] = useState(null);
   const [selectedMessage, setSelectedMessage] = useState();
   const [isSelectedMessage, setIsSelectedMessage] = useState(false);
+  
   const dispatch = useDispatch();
   const receiver_id = route?.params?.receiver_id;
+  const receiver_username=route?.params?.receiver_username;
+  const receiver_profile=route?.params?.receiver_photo;
+  const receiver_phone_number=route?.params?.phone_number;
+  const online_status=new Date(route?.params?.receiver_online_status || null);
+  // console.log("online_status",route?.params?.receiver_online_status)
+  let status="last Active "+ route?.params?.receiver_online_status?.split("T")[0];
+  const time=new Date().toISOString();
+  console.log(online_status)
+  console.log(time)
+  if(((new Date() - online_status)/1000) < 5){
+    status="online";
+  }
+  else if (route?.params?.receiver_online_status?.split("T")[0] === time.split("T")[0]) {
+    // const time = route?.params?.receiver_online_status?.split("T")[1]?.split("Z")[0]?.split(":")?.slice(0, 2).join(":");
+    status = "Last Active " + new Date(route?.params?.receiver_online_status).toLocaleTimeString();
+  }
+  
   useEffect(() => {
     dispatch(getUserMessage({ receiver_id: receiver_id }));
   }, []);
@@ -49,13 +70,13 @@ const Chat = ({ route }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch(getUserMessage({ receiver_id: receiver_id }));
-    }, 2000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
   //Use Selector
   const { messages, loading } = useSelector((state) => state.Chat);
   const { profile } = useSelector((state) => state.Account);
-
+  // console.log(profile);
   ///Handle Reading Messges
   const unread_messages = messages.filter(
     (message) => !message.is_read && message?.receiver?.id == profile?.user?.id
@@ -69,16 +90,16 @@ const Chat = ({ route }) => {
       const tempMessage = {
         id: Date.now(),
         message: message,
-        message_type: "message",
+        message_type: "text",
         tempory: true,
-        sender: profile?.user,
+        sender: profile?.detail,
       };
       setTempMessages([...tempMessages, tempMessage]);
       dispatch(
         SendChat({
           receiver_id: receiver_id,
           message: message,
-          message_type: "message",
+          message_type: "text",
         })
       )
         .unwrap()
@@ -144,11 +165,67 @@ const Chat = ({ route }) => {
         .catch((error) => console.log(error));
     }
   };
+  //Phone cALL HANDLER FUNCTION
+  const phoneCall = async (phone_number) => {
+    if (Platform.OS === "android") {
+      try {
+        const supported = await Linking.canOpenURL(`tel:${phone_number}`);
+        if (supported) {
+          await Linking.openURL(`tel:${phone_number}`);
+        } else {
+          console.log("Can't handle url");
+        }
+      } catch (e) {
+        console.log("Error", e);
+      }
+    } else {
+      try {
+        const supported = await Linking.canOpenURL(`telprompt:${phone_number}`);
+        if (supported) {
+          await Linking.openURL(`telprompt:${phone_number}`);
+        } else {
+          console.log("Can't handle url");
+        }
+      } catch (e) {
+        console.log("Error", e);
+      }
+    }
+  };
   return (
     <View className="flex-1 relative ">
-      <Header />
+      {/* <Header /> */}
+      
+      <View className="flex flex-col bg-white justify-end pb-2 px-2" style={{height:height*0.13}}>
+        <View className="flex flex-row justify-between items-center">
+        <View className="flex flex-row items-center ">
+            <Avatar title={receiver_username?.slice(0,2)} containerStyle={{backgroundColor:'green',borderWidth:2,borderColor:'gray'}} rounded size="medium" />
+            <View className="mx-2">
+              <Text className="font-bold text-lg">{receiver_username}</Text>
+              <Text>{status}</Text>
+            </View>
+        </View>
+        {receiver_phone_number  && <View className="flex flex-row items-center gap-x-2">
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(
+                `whatsapp://send?text=Kaz ni Kaz request&phone=${receiver_phone_number}`
+              )
+            }
+            className="flex items-center justify-center w-[40] h-[40] rounded-full bg-[#075e54] hover:bg-gray-400"
+          >
+            <FontAwesome5 name="whatsapp" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => phoneCall(receiver_phone_number)}
+            className="flex items-center justify-center w-[40] h-[40] rounded-full bg-[#212d5e] hover:bg-gray-400"
+          >
+           <FontAwesome5 name="phone-alt" size={24} color="white" />
+          </TouchableOpacity>
+        </View>}
+        </View>
+      </View>
       {isSelectedMessage && (
-        <View className=" flex flex-row justify-between absolute h-40 z-30  items-center bg-black w-full py-2 self-center ">
+        <View className="flex flex-row justify-between absolute h-40 z-30  items-center bg-black w-full py-2 self-center ">
           <TouchableOpacity
             onPress={() => {
               setIsSelectedMessage(false);
@@ -185,6 +262,7 @@ const Chat = ({ route }) => {
           }}
         >
           {[...messages, ...tempMessages]?.map((message, index) => {
+            
             return (
               <TouchableOpacity
                 onLongPress={() => {
@@ -200,25 +278,20 @@ const Chat = ({ route }) => {
                   setShowAddFile(false);
                 }}
                 key={index}
-                style={{
-                  backgroundColor:
-                    selectedMessage === message?.id
-                      ? "blue"
-                      : message?.sender?.id == profile?.user?.id
-                      ? "gray"
-                      : Colors.appColor,
-                  width: selectedMessage === message?.id && width,
-                }}
-                className={` max-w-[70%] flex flex-col  px-3 ${
-                  message?.sender?.id == profile?.user?.id
+                
+                className={`w-auto max-w-[80%]  flex flex-col  px-3 ${
+                  message?.sender?.id == profile?.detail?.id
                     ? `self-end items-end  ${
-                        message?.message_type == "message" && "bg-appColor"
+                        message?.message_type == "text" && "bg-appColor"
                       }  my-1 py-2 rounded-3xl px-3`
                     : `self-start  my-1 py-2 rounded-3xl px-3 ${
-                        message?.message_type == "message" && "bg-slate-400"
+                        message?.message_type == "text" && "bg-slate-400"
                       }`
                 }  `}
               >
+                
+                  <Text className=''>{message?.message}</Text>
+              
                 {message?.message_type == "image" && (
                   <Image
                     source={{ uri: message?.image }}
@@ -231,9 +304,9 @@ const Chat = ({ route }) => {
                     // resizeMode="contain"
                   />
                 )}
-                {message?.message_type == "message" && (
+                {/* {message?.message_type == "text" && (
                   <Text>{message?.message}</Text>
-                )}
+                )} */}
                 {message?.message_type == "video" && (
                   <Video
                     source={{ uri: message?.video }}
@@ -299,7 +372,7 @@ const Chat = ({ route }) => {
               autoFocus
               value={message}
               onChangeText={(e) => setMessage(e)}
-              className="py-2 px-2 w-[87%] max-h-24 bg-white rounded-3xl"
+              className="py-3 px-2 w-[87%] max-h-24 bg-white rounded-3xl"
               multiline
               placeholder="Type message..."
             />

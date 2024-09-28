@@ -1,4 +1,6 @@
 import "react-native-gesture-handler";
+import 'react-native-reanimated'
+
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
@@ -186,6 +188,7 @@ export default function App() {
   //   return unsubscribe;
   // }, []);
   //Request Permissions
+//Updating Online status 
 
   return (
     <I18nextProvider i18n={i18n}>

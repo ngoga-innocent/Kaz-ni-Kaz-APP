@@ -60,13 +60,13 @@ const AllCategories = () => {
     setSearchParams(text);
   };
   return (
-    <SafeAreaView className={`flex-1 ${isDarkMode && "bg-darkcolor"}`}>
-      <View className="flex-1 pb-20" stickyHeaderIndices={[0]}>
+    <ScrollView stickyHeaderIndices={[0]} className={`flex-1 ${isDarkMode && "bg-darkcolor"}`}>
+      
         <View className="" style={{}}>
           <Header />
 
           <View
-            className={`bg-white shadow-md shadow-black py-2 px-2 rounded-lg w-[90%] mx-auto`}
+            className={`bg-white py-2 px-2 rounded-lg w-[90%] mx-auto`}
           >
             <TextInput
               placeholder="Search Category"
@@ -75,14 +75,20 @@ const AllCategories = () => {
             />
           </View>
         </View>
-        <View className="flex flex-row items-start ">
-          <ScrollView className=" max-h-[98%] overflow-scroll my-2 w-[28%]">
+        <View className="h-[100%] flex flex-row items-start max-h-screen overflow-y-scroll ">
+          <ScrollView className="min-h-[98%] max-h-[98%] bg-slate-200 overflow-scroll my-2 w-[28%]" 
+          style={{
+            flexGrow:1
+            
+
+          }}
+          >
             {SideCategory?.map((item, index) => {
               return (
                 <TouchableOpacity
                   onPress={() => CategoryPress(item)}
                   key={index}
-                  className="bg-slate-200 py-3 mb-1 items-center px-2"
+                  className="bg-slate-200 py-3 mb-1 items-center border-b border-slate-100 px-2"
                 >
                   <Text>{item.name}</Text>
                 </TouchableOpacity>
@@ -140,8 +146,8 @@ const AllCategories = () => {
             })}
           </ScrollView>
         </View>
-      </View>
-    </SafeAreaView>
+      
+    </ScrollView>
   );
 };
 

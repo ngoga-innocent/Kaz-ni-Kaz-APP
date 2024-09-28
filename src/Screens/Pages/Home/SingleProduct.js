@@ -668,6 +668,13 @@ const SingleProduct = ({ route }) => {
                             screen: "chatHome",
                             params: {
                               receiver_id: product?.uploader?.id,
+                              
+                                
+                                receiver_username:product?.uploader?.username,
+                                receiver_photo:product?.uploader?.profile,
+                                receiver_online_status:product?.uploader?.online_status,
+                                phone_number:product?.uploader?.phone_number
+                            
                             },
                           });
                         } else {

@@ -11,9 +11,9 @@ const Splash = () => {
   const { height, width } = Dimensions.get("screen");
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  useEffect(() => {
-    getProduct();
-  }, []);
+  // useEffect(() => {
+  //   getProduct();
+  // }, []);
   async function getProduct() {
     const result = await dispatch(FetchProduct());
     if (FetchProduct.fulfilled.match(result)) {
@@ -34,6 +34,9 @@ const Splash = () => {
   return (
     <View className="flex-1 items-center justify-center flex flex-col">
       <StatusBar auto />
+      <View className="z-50">
+        <Toast />
+      </View>
       <Animatable.View
         animation="pulse"
         duration={2000}
@@ -43,6 +46,7 @@ const Splash = () => {
       >
         <Animatable.View
           delay={2000}
+          
           animation="pulse"
           iterationCount="infinite"
           className="rounded-full z-20 border border-appColor items-center justify-center"
@@ -68,6 +72,9 @@ const Splash = () => {
         animation="slideInDown"
         delay={2000}
         duration={3000}
+        onAnimationEnd={()=> navigation.navigate("BottomTab", {
+          screen: "Home",
+        })}
       >
         <Text className="text-bold text-2xl text-appColor font-bold">
           KAZ NI KAZ

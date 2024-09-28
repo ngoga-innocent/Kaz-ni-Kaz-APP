@@ -244,7 +244,7 @@ const ProductSlice = createSlice({
       .addCase(FetchProduct.rejected, (state, action) => {
         state.isError = true;
         state.errorMessage = action.payload;
-        state.loading = false;
+        state.loading = true;
       });
     ///////Add Product /////
     builder.addCase(UploadProduct.pending, (state) => {

@@ -25,13 +25,15 @@ export const SignUp = createAsyncThunk(
     };
     try {
       const res = await fetch(`${Url}/account/register`, requestOptions);
+      const result=await res.json()
       if (!res.ok) {
-        console.log("Got an error");
-        return rejectWithValue(await res.json());
+        console.log(result)
+        return rejectWithValue(result.detail);
       }
-      console.log("Deployed");
-      return await res.json();
+      
+      return result;
     } catch (error) {
+      console.log(error);
       return rejectWithValue("please check your internet connection");
     }
   }
@@ -106,6 +108,7 @@ export const getProfile = createAsyncThunk(
       try {
         const res = await fetch(`${Url}/account/profile`, requestOptions);
         if (!res.ok) {
+          await AsyncStorage.removeItem("token")
           return rejectWithValue(await res.json());
         }
         return await res.json();
@@ -190,6 +193,40 @@ export const EditProfile = createAsyncThunk(
     }
   }
 );
+
+//Update Online Status
+export const UpdateOnlineStatus=createAsyncThunk(
+  "updateStatus",
+  async(_,{rejectWithValue})=>{
+      const token=await AsyncStorage.getItem("token");
+      if(!token){
+        return rejectWithValue("No Token Found");
+      }
+      const myHeaders=new Headers();
+      myHeaders.append("Authorization",`Token ${token}`);
+      myHeaders.append("Content-Type","application/json");
+      const requestOptions={
+        method:"POST",
+        headers:myHeaders,
+    
+        redirect:"follow"
+      }
+      try {
+          const res=await fetch(`${Url}/account/update_online_status`,requestOptions);
+          const data=await res.json()
+          console.log("Online status",data)
+          if (!res.ok) {
+
+            return rejectWithValue(data);
+          }
+         
+          return data;
+      } catch (error) {
+        console.log("Error",error);
+       return rejectWithValue({"detail":"Error Occured"}) 
+      }
+  }
+)
 const AccountSlice = createSlice({
   name: "Account",
   initialState,
@@ -206,7 +243,7 @@ const AccountSlice = createSlice({
         state.loading = false;
       })
       .addCase(SignUp.rejected, (state, action) => {
-        state.errorMessage = action.payload;
+        state.errorMessage = action?.payload?.detail;
 
         state.loading = false;
       });
@@ -225,7 +262,7 @@ const AccountSlice = createSlice({
       .addCase(SignIn.rejected, (state, action) => {
         // console.log("rejected", action.payload.detail);
         state.isError = true;
-        state.errorMessage = action.payload.detail;
+        state.errorMessage = action?.payload?.detail;
         state.loading = false;
       });
 
@@ -283,6 +320,22 @@ const AccountSlice = createSlice({
         state.isError = true;
         state.errorMessage = action.payload.detail;
         state.loading = false;
+      });
+      //Update Online Status
+      builder.addCase(UpdateOnlineStatus.pending, (state) => {
+        state.loading = true;
+        console.log("updating status pending");
+      })
+      .addCase(UpdateOnlineStatus.fulfilled, (state, action) => {
+        state.profile = action.payload;
+        state.loading = false;
+        console.log("updating status fulfilled");
+      })
+      .addCase(UpdateOnlineStatus.rejected, (state, action) => {
+        state.isError = true;
+        state.errorMessage = action.payload.detail;
+        state.loading = false;
+        console.log("updating status rejected", action.payload);
       });
   },
 });

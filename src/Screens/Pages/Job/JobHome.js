@@ -32,11 +32,12 @@ import { Entypo } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
 import { useTheme } from "../../components/Functions/ThemeProvider";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 const JobHome = () => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
-
+  const navigation=useNavigation();
   const insets = useSafeAreaInsets();
   const statusBarHeight = insets.top;
   const dispatch = useDispatch();
@@ -44,6 +45,7 @@ const JobHome = () => {
     dispatch(FetchJobs());
   }, []);
   const { loading, jobs } = useSelector((state) => state.Jobs);
+  const [JobList,setJobList]=useState([])
   const [showJobDetails, setShowJobDetails] = useState(false);
   const [jobDetails, setJobDetails] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
@@ -52,11 +54,34 @@ const JobHome = () => {
   const [jobDescription, setJobDescription] = useState(null);
   const [JobSlug, setJobSlug] = useState(null);
   const [showAddJob, setShowAddJob] = useState(null);
+  const [search_job,setSearchJob]=useState("")
   const handlePersist = (event) => {
     event.stopPropagation();
   };
+  useEffect(()=>{
+    setJobList(jobs)
+  },[])
   const { profile } = useSelector((state) => state.Account);
-
+  const SearchJob = (text) => {
+    setSearchJob(text);
+    
+    const filteredJobs = jobs.filter((job) => {
+      const jobTitle = job.job_title.toLowerCase();
+      const searchQuery = text.toLowerCase();
+      return jobTitle.includes(searchQuery);
+    });
+    // update the job list with the filtered results
+    setJobList(filteredJobs);
+  };
+  //Handle add job check for logged in
+  async function CheckLogin(){
+    if(await AsyncStorage.getItem('token') !=null){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
   const addThumbnail = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.granted) {
@@ -73,7 +98,7 @@ const JobHome = () => {
     }
   };
   const PostJobFunction = async () => {
-    console.log("posted");
+    
     const result = await dispatch(
       AddJobSlice({
         job_title: jobTitle,
@@ -134,6 +159,8 @@ const JobHome = () => {
             placeholder="Search for a job"
             className="text-white max-w-[80%] "
             placeholderTextColor="white"
+            value={search_job}
+            onChangeText={(text)=>SearchJob(text)}
           />
           <FontAwesome name="search" size={20} color="white" />
         </View>
@@ -148,12 +175,12 @@ const JobHome = () => {
           alignItems: "center",
         }}
       >
-        {jobs?.length < 1 && (
+        {JobList?.length < 1 && (
           <Text className="text-lg font-bold my-7">
             No Job Available for Now
           </Text>
         )}
-        {jobs?.map((job, index) => {
+        {JobList?.map((job, index) => {
           return (
             <TouchableOpacity
               onPress={() => {
@@ -201,7 +228,10 @@ const JobHome = () => {
       </ScrollView>
 
       <TouchableOpacity
-        onPress={() => setShowAddJob(true)}
+        onPress={async()=>{
+          const isLoggeedIn=await CheckLogin();
+          console.log(isLoggeedIn)
+          !isLoggeedIn?navigation.navigate("logins"):setShowAddJob(true)}}
         className="absolute shadow-md shadow-black z-50 bottom-5 right-3"
       >
         <AntDesign name="pluscircle" size={60} color={Colors.appColor} />
@@ -286,12 +316,12 @@ const JobHome = () => {
       >
         <TouchableWithoutFeedback onPress={() => setShowAddJob(false)}>
           <View
-            className="flex-1"
+            className="flex-1 flex flex-col justify-end "
             style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
           >
             <TouchableWithoutFeedback onPress={handlePersist}>
               <KeyboardAvoidingView
-                className="flex-1"
+                className="h-[70%] max-h-[70%] overflow-y-scroll"
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
               >
                 <Animatable.View className="h-[60%] bg-white bottom-0 absolute rounded-t-2xl flex-end w-full">

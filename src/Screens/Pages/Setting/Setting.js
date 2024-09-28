@@ -102,7 +102,7 @@ const Setting = () => {
             containerStyle={{ borderColor: Colors.appColor, borderWidth: 1 }}
           />
         </View>
-        <View className="py-3 w-[90%] my-5 z-10 shadow-sm shadow-black self-center bg-gray-200 px-2 rounded-md flex flex-row items-center justify-between">
+        {profile && <View className="py-3 w-[90%] my-5 z-10 shadow-sm shadow-black self-center bg-gray-200 px-2 rounded-md flex flex-row items-center justify-between">
           <View>
             <Text className="font-bold text-lg">{profile?.user?.username}</Text>
             <Text className="text-gray-600 text-xs">
@@ -133,7 +133,7 @@ const Setting = () => {
               </TouchableOpacity>
             </>
           )}
-        </View>
+        </View>}
         <Text className=" text-gray-400 mx-4 font-bold">Account Setting</Text>
         <TouchableOpacity
           style={styles.settingButton}

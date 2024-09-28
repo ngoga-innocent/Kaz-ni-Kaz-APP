@@ -12,16 +12,23 @@ const initialState = {
 export const FetchWallet = createAsyncThunk(
   "FetchWallet",
   async (_, { rejectWithValue }) => {
+    
     const token = await AsyncStorage.getItem("token");
+    console.log(token)
+    if (!token) {
+      return rejectWithValue("No token found, please log in again.");
+    }
     const myHeaders = new Headers();
     myHeaders.append("Authorization", `Token ${token}`);
+    
     const requestOptions = {
       headers: myHeaders,
       redirect: "follow",
       method: "GET",
     };
     try {
-      const res = await fetch(`${Url}/wallet`, requestOptions);
+      const res = await fetch(`${Url}/wallet/`, requestOptions);
+      //console.log(await res.json());
       if (!res.ok) {
         return rejectWithValue(await res.json());
       } else {

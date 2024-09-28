@@ -8,16 +8,17 @@ import {
   TouchableOpacity,
   Dimensions,
   ImageBackground,
+  StyleSheet
 } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { Colors,heading_text,normal_text } from "../../components/Global";
+import { Colors, heading_text, normal_text } from "../../components/Global";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchCategories, FetchProduct } from "../../../redux/Features/Product";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "react-native-elements";
 import { FetchWallet } from "../../../redux/Features/WalletSlice";
-import { getProfile } from "../../../redux/Features/Account";
+import { getProfile, UpdateOnlineStatus } from "../../../redux/Features/Account";
 import { useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "../../components/Functions/ThemeProvider";
@@ -26,7 +27,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
 import { fetchOurAds } from "../../../redux/Features/OurAds";
 import { LinearGradient } from "expo-linear-gradient";
+// import  LinearGradient  from "react-native-linear-gradient"
 import Header from "./Header";
+import Skeleton from "../../components/Skeleton";
+// import Skeleton from "@thevsstech/react-native-skeleton";
+// import { Skeleton } from "moti/skeleton";
+
 // 15:2F:B8:6A:16:83:62:0F:D9:E6:F7:E6:E1:F8:BA:03:A3:5D:B6:80
 const Home = () => {
   const focused = useIsFocused();
@@ -41,10 +47,10 @@ const Home = () => {
   const isfocused = useIsFocused();
   const isDarkMode = theme === "dark";
   const { t, i18n } = useTranslation();
-  const height=Dimensions.get("screen").height;
-  const width=Dimensions.get("screen").width;
+  const height = Dimensions.get("screen").height;
+  const width = Dimensions.get("screen").width;
   const blurhash =
-  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+    "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
   // Function to handle auto-sliding
   useEffect(() => {
     const timer = setInterval(() => {
@@ -52,7 +58,7 @@ const Home = () => {
       const nextPage = (currentPage + 1) % products.length;
       // Scroll to the next page
       scrollViewRef.current.scrollTo({
-        x: nextPage * Dimensions.get("window").width,
+        x: nextPage * Dimensions.get("window").width
       });
       // Update the current page state
       setCurrentPage(nextPage);
@@ -61,20 +67,23 @@ const Home = () => {
     return () => clearInterval(timer);
   }, [currentPage, products]);
   useEffect(() => {
-    const timer = setInterval(() => {
-      // Calculate the index of the next page
-      const nextPage = (currentPage + 1) % products.length;
-      // Scroll to the next page
-      ourAdsviewRef.current.scrollTo({
-        x: nextPage * Dimensions.get("window").width,
-      });
-      // Update the current page state
-      setCurrentPage(nextPage);
-    }, 5000);
-    // Auto slide interval (adjust as needed)
-
+    if(!loading){
+      const timer = setInterval(() => {
+        // Calculate the index of the next page
+        const nextPage = (currentPage + 1) % products.length;
+        // Scroll to the next page
+         ourAdsviewRef.current.scrollTo({
+          x: nextPage * Dimensions.get("window").width
+        });
+        // Update the current page state
+        setCurrentPage(nextPage);
+      }, 5000);
+      // Auto slide interval (adjust as needed)
+      return () => clearInterval(timer);
+    }
+    
     // Clear interval on component unmount
-    return () => clearInterval(timer);
+    
   }, [currentPage, products]);
   useEffect(() => {
     CheckLoggedIn();
@@ -89,12 +98,20 @@ const Home = () => {
       setLoggedIn(false);
     }
   }
-  useEffect(() => {
+  useEffect(()=>{
     dispatch(FetchProduct());
     dispatch(FetchCategories());
     dispatch(FetchWallet());
     dispatch(getProfile());
     dispatch(fetchOurAds());
+  },[])
+  useEffect(() => {
+    dispatch(FetchProduct());
+    dispatch(FetchCategories());
+    dispatch(FetchWallet());
+    // dispatch(getProfile());
+    dispatch(fetchOurAds());
+    dispatch(UpdateOnlineStatus());
   }, [isfocused]);
   const handlePageChange = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -111,18 +128,23 @@ const Home = () => {
   const { wallet } = useSelector((state) => state.Wallet);
   // console.log(categories);
   const { profile } = useSelector((state) => state.Account);
-
+  
   useEffect(() => {
     if (products.length > 0) {
       setVipProducts(products?.filter((product) => product?.place === "Vip"));
     }
   }, [products]);
   return (
-    <ScrollView stickyHeaderIndices={[0]} className={`flex-1 ${isDarkMode ? "bg-darkcolor" : null}`}>
+    <ScrollView
+      stickyHeaderIndices={[0]}
+      className={`flex-1 ${isDarkMode ? "bg-darkcolor" : null}`}
+    >
       {/* <Spinner visible={loading} size={30} color={Colors.appColor} /> */}
       {/* <View className="mt-14" /> */}
       <Header />
+      
       <ScrollView className="flex-1 px-2 ">
+      
         
         <ScrollView
           ref={ourAdsviewRef}
@@ -136,32 +158,37 @@ const Home = () => {
           className="flex-1"
           contentContainerStyle={{
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "center"
           }}
         >
-          {our_ads?.oursAds?.map((item, index) => {
+          {loading?<Skeleton  width={Dimensions.get("window").width}></Skeleton>:
+          our_ads?.oursAds?.map((item, index) => {
             // {VipProducts?.map((item, index) => {
             return (
-              <View
-                key={index}
-                // className=" w-[100%]"
-                className={`${isDarkMode ? "" : null}`}
-                style={{ width: Dimensions.get("window").width, flex: 1 }}
-              >
-                <Image
-                  source={{ uri: item?.thumbnail }}
-                  className={`rounded-lg bg-white shadow-sm shadow-black items-center self-center `}
-                  resizeMode="cover"
-                  style={{
-                    width: Dimensions.get("window").width / 1.1,
-                    flex: 1,
-                    height: Dimensions.get("screen").height / 4.5,
-                  }}
-                />
-              </View>
+            
+            <View
+                  key={index}
+                  // className=" w-[100%]"
+                  className={`${isDarkMode ? "" : null}`}
+                  style={{ width: Dimensions.get("window").width, flex: 1 }}
+                >
+                  <Image
+                    source={{ uri: item?.thumbnail }}
+                    className={`rounded-lg bg-white shadow-sm shadow-black items-center self-center `}
+                    resizeMode="cover"
+                    style={{
+                      width: Dimensions.get("window").width / 1.1,
+                      flex: 1,
+                      height: Dimensions.get("screen").height / 4.5
+                    }}
+                  />
+                </View>
+               
+              
             );
           })}
         </ScrollView>
+
         <View className="flex flex-row gap-x-3 self-center my-2">
           {our_ads?.oursAds?.map((item, index) => {
             return (
@@ -189,7 +216,7 @@ const Home = () => {
           <View className="w-32 h-32 absolute -top-14 self-center">
             <Image
               source={require("../../../../assets/icons/logo.png")}
-              className="w-[100%] h-[100%]"
+              className="w-[100%] h-[100%] "
             />
           </View>
           <View className="flex flex-row justify-between px-5 my-2">
@@ -216,10 +243,12 @@ const Home = () => {
           {!profile ? (
             <View className="flex flex-row items-center justify-between w-[80%] self-center">
               <TouchableOpacity
-                className={`border py-2 items-center w-[30%] rounded-xl ${isDarkMode?'border-white':null}` }
+                className={`border py-2 items-center w-[30%] rounded-xl ${
+                  isDarkMode ? "border-white" : null
+                }`}
                 onPress={() =>
                   navigation.navigate("logins", {
-                    screen: "Register",
+                    screen: "Register"
                   })
                 }
               >
@@ -229,10 +258,12 @@ const Home = () => {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
-                className={`border py-2 items-center w-[30%] rounded-xl ${isDarkMode?'border-white':null}` }
+                className={`border py-2 items-center w-[30%] rounded-xl ${
+                  isDarkMode ? "border-white" : null
+                }`}
                 onPress={() =>
                   navigation.navigate("logins", {
-                    screen: "Login",
+                    screen: "Login"
                   })
                 }
               >
@@ -262,7 +293,7 @@ const Home = () => {
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("Home", {
-                screen: "allCategory",
+                screen: "allCategory"
               })
             }
           >
@@ -275,17 +306,20 @@ const Home = () => {
           <ScrollView
             className="gap-x-2 gap-y-1 flex  flex-wrap"
             contentContainerStyle={{
-              
-              justifyContent:"center",
+              justifyContent: "center",
               flexDirection: "row",
-              flexWrap: "wrap",
+              flexWrap: "wrap"
             }}
           >
-            {categories
+            {loading?<Skeleton width={width * 0.9 } height={height * 0.2}>
+             
+            </Skeleton>:categories
               .filter((category) => category?.parent == null)
 
               ?.map((item, index) => {
+                
                 return (
+                   
                   <TouchableOpacity
                     onPress={() => {
                       navigation.navigate("Home", {
@@ -293,28 +327,34 @@ const Home = () => {
                         params: {
                           products: products.filter(
                             (product) => product.category === item.id
-                          ),
-                        },
+                          )
+                        }
                       });
                     }}
                     key={index}
                     className="items-center text-center w-[20%]"
                   >
-                    <Avatar
+                    
+                     <Avatar
                       source={{ uri: item.thumbnail }}
                       size="large"
+                      
                       rounded
                       imageProps={{
-                        resizeMode: "contain",
+                        resizeMode: "contain"
                       }}
                       containerStyle={{
                         borderWidth: 1,
                         borderColor: Colors.appColor,
 
-                        backgroundColor: "white",
+                        backgroundColor: "white"
                       }}
                     />
-                    <Text className={`${isDarkMode ? "text-white" : null}`}  style={{fontSize:width *0.033}}>
+                   
+                    <Text
+                      className={`${isDarkMode ? "text-white" : null}`}
+                      style={{ fontSize: width * 0.033 }}
+                    >
                       {item.name}
                     </Text>
                   </TouchableOpacity>
@@ -339,6 +379,7 @@ const Home = () => {
             ?.filter((product) => product.discount > 0)
             .map((item, index) => {
               return (
+                
                 <LinearGradient
                   className={`relative flex flex-row  border mx-4 rounded-lg `}
                   style={{
@@ -346,7 +387,7 @@ const Home = () => {
                     width: Dimensions.get("screen").width * 0.91,
                     maxheight: Dimensions.get("screen").height * 0.24,
                     maxwidth: Dimensions.get("screen").width * 0.91,
-                    overflow: "hidden",
+                    overflow: "hidden"
                   }}
                   key={index}
                   colors={["#050101", "#050101"]}
@@ -356,8 +397,8 @@ const Home = () => {
                       navigation.navigate("Home", {
                         screen: "singleProduct",
                         params: {
-                          product: item,
-                        },
+                          product: item
+                        }
                       })
                     }
                     key={index}
@@ -367,7 +408,7 @@ const Home = () => {
                       width: Dimensions.get("screen").width,
                       maxheight: Dimensions.get("screen").height * 0.24,
                       maxwidth: Dimensions.get("screen").width * 0.91,
-                      overflow: "hidden",
+                      overflow: "hidden"
                     }}
                   >
                     <Image
@@ -387,9 +428,12 @@ const Home = () => {
                       <View>
                         <Text className="text-white">UP TO</Text>
                         <View className=" w-[30%] relative">
-                          <Text className="text-white border z-50 border-white rounded-md font-bold px-2" style={{
-                            fontSize:heading_text
-                          }}>
+                          <Text
+                            className="text-white border z-50 border-white rounded-md font-bold px-2"
+                            style={{
+                              fontSize: heading_text
+                            }}
+                          >
                             {item?.discount}% OFF
                           </Text>
                           <Text className="text-sm text-white font-bold absolute -right-20 rounded-lg -bottom-6 bg-appColor py-2 px-6">
@@ -403,6 +447,8 @@ const Home = () => {
                     </View> */}
                   </TouchableOpacity>
                 </LinearGradient>
+                
+                
               );
             })}
         </ScrollView>
@@ -416,8 +462,8 @@ const Home = () => {
             Featured Products
           </Text>
         </View>
-        
-        <View
+
+        {loading?<Skeleton width={width * 0.9} height={height/5} borderRadius={20} className="my-2"></Skeleton>:<View
           className="flex-1 flex flex-row flex-wrap  pb-8"
           style={{ flexWrap: "wrap" }}
         >
@@ -428,20 +474,20 @@ const Home = () => {
             ?.slice(0, 50)
             ?.map((item, index) => {
               return (
-                <TouchableOpacity
+               <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("Home", {
                       screen: "singleProduct",
                       params: {
-                        product: item,
-                      },
+                        product: item
+                      }
                     })
                   }
                   key={index}
                   className="rounded-lg  mx-1 my-2 bg-white relative overflow-hidden"
                   style={{
                     width: Dimensions.get("window").width / 2.28,
-                    height: Dimensions.get("screen").height / 5,
+                    height: Dimensions.get("screen").height / 5
                   }}
                 >
                   <View className="absolute z-40 right-2 top-1 bg-white w-[32] h-[32] items-center justify-center rounded-full">
@@ -460,7 +506,7 @@ const Home = () => {
                       height: "100%",
                       width: "100%",
 
-                      flex: 1,
+                      flex: 1
                     }}
                   >
                     {/* <Image
@@ -485,9 +531,10 @@ const Home = () => {
                     </View>
                   </ImageBackground>
                 </TouchableOpacity>
+                
               );
             })}
-        </View>
+        </View>}
         <View className="flex flex-row justify-between py-2">
           <Text className={`text-xl font-bold ${isDarkMode && "text-white"}`}>
             Best Sells
@@ -497,15 +544,15 @@ const Home = () => {
               navigation.navigate("Home", {
                 screen: "allProduct",
                 params: {
-                  products: products,
-                },
+                  products: products
+                }
               })
             }
           >
             <Text className="text-lg font-bold text-appColor">See All</Text>
           </TouchableOpacity>
         </View>
-        <View
+        {loading?<Skeleton width={width * 0.9} height={height/5} borderRadius={20}></Skeleton>:<View
           className="flex-1 flex flex-row flex-wrap items-center justify-center pb-8"
           style={{ flexWrap: "wrap" }}
         >
@@ -515,20 +562,21 @@ const Home = () => {
             ?.slice(0, 50)
             ?.map((item, index) => {
               return (
+                
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("Home", {
                       screen: "singleProduct",
                       params: {
-                        product: item,
-                      },
+                        product: item
+                      }
                     })
                   }
                   key={index}
                   className="rounded-lg  mx-1 my-2 bg-white relative overflow-hidden"
                   style={{
                     width: Dimensions.get("window").width / 2.28,
-                    height: Dimensions.get("screen").height / 5,
+                    height: Dimensions.get("screen").height / 5
                   }}
                 >
                   <View className="absolute z-40 right-2 top-1 bg-white w-[32] h-[32] items-center justify-center rounded-full">
@@ -546,7 +594,7 @@ const Home = () => {
                       height: "100%",
                       width: "100%",
 
-                      flex: 1,
+                      flex: 1
                     }}
                   >
                     {/* <Image
@@ -573,7 +621,7 @@ const Home = () => {
                 </TouchableOpacity>
               );
             })}
-        </View>
+        </View>}
       </ScrollView>
 
       <TouchableOpacity
@@ -593,3 +641,10 @@ const Home = () => {
 };
 
 export default Home;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

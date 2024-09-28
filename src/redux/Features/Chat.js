@@ -43,9 +43,9 @@ export const SendChat = createAsyncThunk(
       headers.append("Content-Type", "multipart/form-data");
       const formData = new FormData();
       const message_type = kwargs.message_type;
-      console.log(kwargs.message);
+      // console.log(kwargs.message);
       formData.append("message_type", message_type);
-      if (message_type == "message") {
+      if (message_type == "text") {
         formData.append("message", kwargs.message);
       } else if (message_type == "image") {
         formData.append("image", {
@@ -187,11 +187,12 @@ const ChatSlice = createSlice({
       })
       .addCase(SendChat.fulfilled, (state, action) => {
         state.messages = [...state.messages, action.payload.message];
-        // console.log(state.messages);
+        console.log(state.messages);
       })
       .addCase(SendChat.rejected, (state, action) => {
         state.isError = true;
         state.errorMessage = action.payload;
+        console.log("sedning message error",action.payload)
       });
     builder.addCase(DeleteMessage.pending, (state, action) => {
       state.loading = true;
@@ -214,7 +215,7 @@ const ChatSlice = createSlice({
         state.loading = true;
       })
       .addCase(GetAllChat.fulfilled, (state, action) => {
-        state.AllChats = action.payload.rooms;
+        state.AllChats = action.payload;
         state.loading = false;
       })
       .addCase(GetAllChat.rejected, (state, action) => {
