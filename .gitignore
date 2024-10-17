@@ -34,7 +34,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 ./GoogleService-info.plist
-kaz-ni-kaz-3f155680a975.json
+./kaz-ni-kaz-3f155680a875.json
 firebaseconfig.js
 ./Screens/Pages/LoginScreens/Login.js
 ./Screens/Pages/LoginScreens/Register.js
