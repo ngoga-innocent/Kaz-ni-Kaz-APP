@@ -37,7 +37,7 @@ export const FetchCategories = createAsyncThunk(
 //Fetch Product /////////////////////
 export const FetchProduct = createAsyncThunk(
   "FetchProduct",
-  async (_, { rejectWithValue }) => {
+  async (kwargs, { rejectWithValue }) => {
     const myheaders = new Headers();
     myheaders.append("Content-Type", "application/json");
     const requestOptions = {
@@ -46,7 +46,7 @@ export const FetchProduct = createAsyncThunk(
       redirect: "follow",
     };
     try {
-      const res = await fetch(`${Url}/product`, requestOptions);
+      const res = await fetch(`${Url}/product/?page=${kwargs}`, requestOptions);
       if (!res.ok) {
         return rejectWithValue(await res.json());
       }
@@ -235,10 +235,19 @@ const ProductSlice = createSlice({
     //////////////// Product /////
     builder
       .addCase(FetchProduct.pending, (state) => {
+       if( state.products.length == 0){
         state.loading = true;
+       }
+       
       })
       .addCase(FetchProduct.fulfilled, (state, action) => {
-        state.products = action.payload.products;
+        const newProducts = action.payload.products;
+        // Filter out products that are already in the state based on a unique identifier, like `id`
+    const filteredProducts = newProducts.filter(
+      (newProduct) => !state.products.some((existingProduct) => existingProduct.id === newProduct.id)
+  );
+  state.products = [...state.products, ...filteredProducts];
+        // state.products = [...state.products,...action.payload.products];
         state.loading = false;
       })
       .addCase(FetchProduct.rejected, (state, action) => {

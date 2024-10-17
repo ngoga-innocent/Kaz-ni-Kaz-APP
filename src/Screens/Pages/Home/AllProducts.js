@@ -24,6 +24,7 @@ import { PanGestureHandler } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
 import { Colors } from "../../components/Global";
 import Animated from "react-native-reanimated";
+import { FetchProduct } from "../../../redux/Features/Product";
 import {
   FetchCategories,
   FetchColors,
@@ -31,7 +32,7 @@ import {
 } from "../../../redux/Features/Product";
 const AllProducts = ({ route }) => {
   const dispatch = useDispatch();
-  const { products } = route.params;
+  const { products } = route?.params || useSelector(state=>state?.Products);
 
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -71,6 +72,7 @@ const AllProducts = ({ route }) => {
   const [seeChildCategory, setSeeChildCategory] = useState(false);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [seeFeatures, setSeeFeatures] = useState(false);
+  const [page,setPage]=useState(1)
   const [filteringCategory, setFilteringCategory] = useState(
     categories?.filter((category) => !category.parent)
   );
@@ -161,6 +163,26 @@ const AllProducts = ({ route }) => {
       setSelectedCategory(choosenCategory);
       setShowCategory(false);
     }
+  };
+  const handleScroll = ({ nativeEvent }) => {
+    const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
+
+    // Calculate if the user is at the bottom of the ScrollView
+    const isCloseToBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 20;
+    
+    if (isCloseToBottom && !loading) {
+      dispatch(FetchProduct(page + 1))
+      setPage((prevPage) => prevPage + 1);
+      // products=useSelector(state=>state.Products)
+      setFilteredProducts(products)
+    }
+  };
+  const truncateText = (text, maxLength) => {
+    if (!text) return "No description available.";
+    if (text.length <= maxLength) return text;
+  
+    // Truncate at maxLength, and then remove any partial word at the end
+    return text.substr(0, text.lastIndexOf(" ", maxLength)) + "...";
   };
   return (
     <View className=" flex-1" style={{ flex: 1 }}>
@@ -490,6 +512,7 @@ const AllProducts = ({ route }) => {
           justifyContent: gridDisplay ? "center" : "flex-start",
           paddingHorizontal: gridDisplay ? 10 : null,
         }}
+        onScroll={handleScroll}
       >
         {filteredProduct?.length < 1 && (
           <Text className="text-center mx-3">No Product Available</Text>
@@ -505,7 +528,7 @@ const AllProducts = ({ route }) => {
                   },
                 })
               }
-              onLongPress={() => Alert.alert("Long Pressed hhh")}
+              // onLongPress={() => Alert.alert("Long Pressed hhh")}
               key={index}
               className={`  ${
                 gridDisplay
@@ -536,12 +559,7 @@ const AllProducts = ({ route }) => {
               <View className="px-2 w-[70%]">
                 <Text className="font-bold">{product?.name}</Text>
                 {!gridDisplay && (
-                  <Text className="text-gray-600 text-xs">
-                    {product?.description
-                      ?.split(" ")
-                      ?.slice(0, 100)
-                      ?.join(" ") + "..."}
-                  </Text>
+                 <Text>{truncateText(product?.description, 400)}</Text>
                 )}
                 <Text className="font-bold">{product?.price} USD</Text>
                 <View className="flex flex-row">

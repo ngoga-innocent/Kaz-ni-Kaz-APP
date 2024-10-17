@@ -16,11 +16,12 @@ import { enableScreens } from "react-native-screens";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
-// import firebase from "@react-native-firebase/app";
+import "./firebaseconfig"
+import firebase from "@react-native-firebase/app";
 import { firebaseConfig } from "./firebaseconfig";
-// import messaging from "@react-native-firebase/messaging";
+import messaging from "@react-native-firebase/messaging";
 import registerNNPushToken from "native-notify";
-
+// import firebase from "./firebaseconfig";
 LogBox.ignoreAllLogs(); // Ignore log notifications
 
 const ErrorBoundary = ({ children }) => {
@@ -51,13 +52,20 @@ Notifications.setNotificationHandler({
 });
 
 
-// firebase.initializeApp(firebaseConfig);
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized successfully.");
+  } catch (error) {
+    console.error("Firebase initialization error: ", error);
+  }
+
 // messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 //   console.log("Message handled in the background!", remoteMessage);
 // });
-// messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-//   console.log("Message handled in the background!", remoteMessage);
-// });
+messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+  console.log("Message handled in the background!", remoteMessage);
+});
 
 export default function App() {
   const [isConnected, setIsConnected] = React.useState(true);
@@ -75,6 +83,7 @@ export default function App() {
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: "#FF231F7C",
+        icon: require("./assets/icons/logo.png"),
       });
     }
 
@@ -88,7 +97,7 @@ export default function App() {
         finalStatus = status;
       }
       if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
+        console.log("Failed to get push token for push notification!");
         return;
       }
       // Learn more about projectId:
@@ -145,35 +154,35 @@ export default function App() {
     );
   }, []);
 
-  // useEffect(() => {
-  //   if (requestUserPermission()) {
-  //     messaging()
-  //       .getToken()
-  //       .then(async (token) => {
-  //         console.log(token);
-  //         await fetch(`${Url}/account/register_token`, {
-  //           method: "POST",
-  //           headers: {
-  //             Accept: "application/json",
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({ token }),
-  //           redirect: "following",
-  //         })
-  //           .then((res) => res.json())
-  //           .then((result) => console.log(result))
-  //           .catch((error) => console.log(error));
-  //       });
-  //     //User open a message on the app but was in Quit State
-  //     messaging()
-  //       .getInitialNotification()
-  //       .then((remoteMessage) => console.log(remoteMessage));
-  //   }
-  //   //User Open a message on the app but was in Background
-  //   messaging().onNotificationOpenedApp((remoteMessage) => {
-  //     console.log(remoteMessage);
-  //   });
-  // }, []);
+  useEffect(() => {
+    if (requestUserPermission()) {
+      messaging()
+        .getToken()
+        .then(async (token) => {
+          console.log(token);
+          await fetch(`${Url}/account/register_token`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token }),
+            redirect: "following",
+          })
+            .then((res) => res.json())
+            .then((result) => console.log(result))
+            .catch((error) => console.log(error));
+        });
+      //User open a message on the app but was in Quit State
+      messaging()
+        .getInitialNotification()
+        .then((remoteMessage) => console.log(remoteMessage));
+    }
+    //User Open a message on the app but was in Background
+    messaging().onNotificationOpenedApp((remoteMessage) => {
+      console.log(remoteMessage);
+    });
+  }, []);
 
   // //ForeGround MESSAGE
   // useEffect(() => {

@@ -7,12 +7,14 @@ import { Colors } from "../../components/Global";
 import { useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { UpdateOnlineStatus } from "../../../redux/Features/Account";
+import {useSafeAreaInsets} from 'react-native-safe-area-context'
 export default Header = () => {
   const dispatch = useDispatch();
   useEffect(()=>{
     dispatch(UpdateOnlineStatus());
     console.log('dispatched')
   },[]);
+  const inset=useSafeAreaInsets()
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const { wallet } = useSelector((state) => state.Wallet);
@@ -30,11 +32,11 @@ export default Header = () => {
     });
   }
   return (
-    <View className="" style={{ height: height * 0.13 }}>
+    <View className="bg-white" style={{paddingTop:inset.top }}>
       <View
-        className={`flex-1 flex-row justify-between items-center  mb-2 ${
+        className={` flex-row justify-between items-center  mb-2 ${
           isDarkMode ? "bg-darkcolor" : "bg-white"
-        } px-2 rounded-lg py-2 pt-14`}
+        } px-2 rounded-lg py-2 `}
       >
         <Image
           source={require("../../../../assets/icon.png")}

@@ -49,12 +49,19 @@ const Chat = ({ route }) => {
   const time=new Date().toISOString();
   console.log(online_status)
   console.log(time)
+  const formatTime = (timeStr) => {
+    const date = new Date(timeStr);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+  };
   if(((new Date() - online_status)/1000) < 5){
     status="online";
   }
   else if (route?.params?.receiver_online_status?.split("T")[0] === time.split("T")[0]) {
     // const time = route?.params?.receiver_online_status?.split("T")[1]?.split("Z")[0]?.split(":")?.slice(0, 2).join(":");
-    status = "Last Active " + new Date(route?.params?.receiver_online_status).toLocaleTimeString();
+    status = "Last Active " + formatTime(route?.params?.receiver_online_status);
+  }
+  else{
+    status="Last Active " +route?.params?.receiver_online_status?.split("T")[0]
   }
   
   useEffect(() => {

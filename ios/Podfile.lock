@@ -22,7 +22,7 @@ PODS:
   - EXJSONUtils (0.13.1)
   - EXManifests (0.14.3):
     - ExpoModulesCore
-  - EXNotifications (0.28.16):
+  - EXNotifications (0.28.18):
     - ExpoModulesCore
   - Expo (51.0.32):
     - ExpoModulesCore
@@ -126,12 +126,125 @@ PODS:
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
   - FBLazyVector (0.74.5)
+  - Firebase (11.2.0):
+    - Firebase/Core (= 11.2.0)
+  - Firebase/Core (11.2.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (~> 11.2.0)
+  - Firebase/CoreOnly (11.2.0):
+    - FirebaseCore (= 11.2.0)
+  - Firebase/Messaging (11.2.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 11.2.0)
+  - FirebaseAnalytics (11.2.0):
+    - FirebaseAnalytics/AdIdSupport (= 11.2.0)
+    - FirebaseCore (~> 11.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - FirebaseAnalytics/AdIdSupport (11.2.0):
+    - FirebaseCore (~> 11.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleAppMeasurement (= 11.2.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - FirebaseCore (11.2.0):
+    - FirebaseCoreInternal (~> 11.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/Logger (~> 8.0)
+  - FirebaseCoreExtension (11.2.0):
+    - FirebaseCore (~> 11.0)
+  - FirebaseCoreInternal (11.2.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+  - FirebaseInstallations (11.2.0):
+    - FirebaseCore (~> 11.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - PromisesObjC (~> 2.4)
+  - FirebaseMessaging (11.2.0):
+    - FirebaseCore (~> 11.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/Reachability (~> 8.0)
+    - GoogleUtilities/UserDefaults (~> 8.0)
+    - nanopb (~> 3.30910.0)
   - fmt (9.1.0)
   - glog (0.3.5)
+  - GoogleAppMeasurement (11.2.0):
+    - GoogleAppMeasurement/AdIdSupport (= 11.2.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleAppMeasurement/AdIdSupport (11.2.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 11.2.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleAppMeasurement/WithoutAdIdSupport (11.2.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/MethodSwizzler (~> 8.0)
+    - GoogleUtilities/Network (~> 8.0)
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
+    - nanopb (~> 3.30910.0)
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
   - GoogleSignIn (7.1.0):
     - AppAuth (< 2.0, >= 1.7.3)
     - GTMAppAuth (< 5.0, >= 4.1.1)
     - GTMSessionFetcher/Core (~> 3.3)
+  - GoogleUtilities (8.0.2):
+    - GoogleUtilities/AppDelegateSwizzler (= 8.0.2)
+    - GoogleUtilities/Environment (= 8.0.2)
+    - GoogleUtilities/Logger (= 8.0.2)
+    - GoogleUtilities/MethodSwizzler (= 8.0.2)
+    - GoogleUtilities/Network (= 8.0.2)
+    - "GoogleUtilities/NSData+zlib (= 8.0.2)"
+    - GoogleUtilities/Privacy (= 8.0.2)
+    - GoogleUtilities/Reachability (= 8.0.2)
+    - GoogleUtilities/SwizzlerTestHelpers (= 8.0.2)
+    - GoogleUtilities/UserDefaults (= 8.0.2)
+  - GoogleUtilities/AppDelegateSwizzler (8.0.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.0.2):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.0.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/MethodSwizzler (8.0.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.0.2):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (8.0.2)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.0.2)
+  - GoogleUtilities/Reachability (8.0.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/SwizzlerTestHelpers (8.0.2):
+    - GoogleUtilities/MethodSwizzler
+  - GoogleUtilities/UserDefaults (8.0.2):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
   - GTMAppAuth (4.1.1):
     - AppAuth/Core (~> 1.7)
     - GTMSessionFetcher/Core (< 4.0, >= 3.3)
@@ -156,6 +269,12 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
+  - nanopb (3.30910.0):
+    - nanopb/decode (= 3.30910.0)
+    - nanopb/encode (= 3.30910.0)
+  - nanopb/decode (3.30910.0)
+  - nanopb/encode (3.30910.0)
+  - PromisesObjC (2.4.0)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -1322,6 +1441,14 @@ PODS:
     - React-Core
   - RNDateTimePicker (8.0.1):
     - React-Core
+  - RNFBApp (21.0.0):
+    - Firebase/CoreOnly (= 11.2.0)
+    - React-Core
+  - RNFBMessaging (21.0.0):
+    - Firebase/Messaging (= 11.2.0)
+    - FirebaseCoreExtension
+    - React-Core
+    - RNFBApp
   - RNGestureHandler (2.16.2):
     - DoubleConversion
     - glog
@@ -1444,8 +1571,12 @@ DEPENDENCIES:
   - EXUpdates (from `../node_modules/expo-updates/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
+  - Firebase
+  - FirebaseCore
+  - FirebaseCoreInternal
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -1500,6 +1631,8 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
+  - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+  - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - RNLocalize (from `../node_modules/react-native-localize`)
@@ -1510,12 +1643,24 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AppAuth
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseCoreExtension
+    - FirebaseCoreInternal
+    - FirebaseInstallations
+    - FirebaseMessaging
+    - GoogleAppMeasurement
+    - GoogleDataTransport
     - GoogleSignIn
+    - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
     - libavif
     - libdav1d
     - libwebp
+    - nanopb
+    - PromisesObjC
     - ReachabilitySwift
     - SDWebImage
     - SDWebImageAVIFCoder
@@ -1704,6 +1849,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
+  RNFBApp:
+    :path: "../node_modules/@react-native-firebase/app"
+  RNFBMessaging:
+    :path: "../node_modules/@react-native-firebase/messaging"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
@@ -1728,7 +1877,7 @@ SPEC CHECKSUMS:
   EXImageLoader: ab589d67d6c5f2c33572afea9917304418566334
   EXJSONUtils: 30c17fd9cc364d722c0946a550dfbf1be92ef6a4
   EXManifests: c1fab4c3237675e7b0299ea8df0bcb14baca4f42
-  EXNotifications: b1b174716b287e161350a18de1d253aabceeea2d
+  EXNotifications: dd289340c26bc5388e440fc90d0b2c661cbd0285
   Expo: 33132a667698a3259a4e6c0af1b4936388e5fa33
   ExpoAdapterGoogleSignIn: da10ae7e7c1d73a10c2facebcdfe5ebea8e073ce
   ExpoAppleAuthentication: 265219fa0ba1110872079f55f56686b9737b0065
@@ -1754,15 +1903,27 @@ SPEC CHECKSUMS:
   EXUpdates: e15eb0356dc6eeb2d97d0a7545117e1c8112ec79
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
+  Firebase: 98e6bf5278170668a7983e12971a66b2cd57fc8c
+  FirebaseAnalytics: c36efd5710c60c17558650fa58c2066eca7e9265
+  FirebaseCore: a282032ae9295c795714ded2ec9c522fc237f8da
+  FirebaseCoreExtension: cda74ddfb001224bd8fd1d6e74698b4ed07803de
+  FirebaseCoreInternal: 0c569513412da9f3b31bd0b340013bbee8f295c5
+  FirebaseInstallations: 771177d89d6c451dc6e50085ec82e2fc77ed0a4a
+  FirebaseMessaging: c9ec7b90c399c7a6100297e9d16f8a27fc7f7152
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
+  GoogleAppMeasurement: 76d4f8b36b03bd8381fa9a7fe2cc7f99c0a2e93a
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
+  GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
+  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 3afceddffa65aee666dafd6f0116f1d975db1584
   RCTRequired: ec1239bc9d8bf63e10fb92bd8b26171a9258e0c1
@@ -1815,6 +1976,8 @@ SPEC CHECKSUMS:
   ReactCommon: f7da14a8827b72704169a48c929bcde802698361
   RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
   RNDateTimePicker: b6a9b35a785ecbe12b4e7d6de5439d0aa4614146
+  RNFBApp: c1337749fc4a372b515ba0eb82058efbd064e10b
+  RNFBMessaging: 2dd7ef3e3eca8ec62599f0f11b739e6f75c57cd2
   RNGestureHandler: 2282cfbcf86c360d29f44ace393203afd5c6cff7
   RNGoogleSignin: 9e68b9bcc3888219357924e32ee563624745647d
   RNLocalize: 4f22418187ecd5ca693231093ff1d912d1b3c9bc
@@ -1828,6 +1991,6 @@ SPEC CHECKSUMS:
   sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
 
-PODFILE CHECKSUM: f1c9a9a92f1bd9d7c32c83e0d5910ca1ca8376b0
+PODFILE CHECKSUM: 1dd31bc497626ed69c3826fb58c11a7926505dc2
 
 COCOAPODS: 1.15.2

@@ -18,7 +18,10 @@
       "usesAppleSignIn": true,
       "entitlements": {
         "aps-environment":"production"
-      }
+      },
+      "associatedDomains": [
+        "applinks:kaznik.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +29,7 @@
         "backgroundColor": "#ffffff"
       },
       "versionCode": 10,
-      "googleServicesFile": "./google-services.json",
+      "googleServicesFile": "./kaz-ni-kaz-3f155680a875.json",
       "package": "com.ngoga.KazniKaz",
       "permissions": [
         "INTERNET",
@@ -41,21 +44,23 @@
       "intentFilters": [
         {
           "action": "VIEW",
+          "autoVerify": true,
           "data": [
             {
               "scheme": "https",
-              "host": "kaznikazapi.onrender.com"
+              "host": "www.kaznikaz.com",
+              "pathPrefix": "/"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "linking": {
+    "prefixes": ["https://kaznikaz.com"]
+  }
     },
     "plugins": [
       "expo-apple-authentication",

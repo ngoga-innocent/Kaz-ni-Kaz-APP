@@ -125,7 +125,7 @@ const Wallet = () => {
         setWithdrawModal(false);
       }
       if (MakeDeposit.rejected.match(result)) {
-        console.log(result);
+        // console.log(result);
         setWithdrawModal(false);
         // Toast.show({
         //   text1: "Withdraw Failed ",

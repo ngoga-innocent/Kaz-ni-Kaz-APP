@@ -260,9 +260,12 @@ useEffect(()=>{
       if (SignIn.fulfilled.match(result)) {
         navigation.navigate("BottomTab");
       } else if (SignIn.rejected.match(result)) {
-        Alert.alert(
-          "This Account is not registered on KazniKaz please Register Your Account"
-        );
+        console.log(result.payload)
+        Toast.show({
+          text1:"Failed to login",
+          text2:result?.payload?.detail,
+          type:'error'
+        })
       }
     } else {
       Alert.alert("Fill the empty fields to continue ");

@@ -32,6 +32,7 @@ import { useTheme } from "../../components/Functions/ThemeProvider";
 import { deleteProduct, FetchProduct } from "../../../redux/Features/Product";
 import Toast from "react-native-toast-message";
 import { getProfile } from "../../../redux/Features/Account";
+import Url from "../../../../Url";
 const SingleProduct = ({ route }) => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
@@ -107,7 +108,7 @@ const SingleProduct = ({ route }) => {
   const shareProduct = async (productId) => {
     try {
       const result = await Share.share({
-        message: `Check out this product: https://kaznikazapi.onrender.com/product/${productId}`,
+        message: `Check out this product: ${Url}/single_product/${productId}`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -137,7 +138,7 @@ const SingleProduct = ({ route }) => {
             const result = await dispatch(
               deleteProduct({ product_id: product?.id })
             );
-            console.log(result);
+            // console.log(result);
             if (deleteProduct.fulfilled.match(result)) {
               Toast.show({
                 text1: "Product Deleted Successfully",
@@ -539,6 +540,7 @@ const SingleProduct = ({ route }) => {
             </>
           )}
         </View>
+        <Text>{product.description}</Text>
         <View>
           <Text className={`font-bold text-lg ${isDarkMode && "text-white"}`}>
             Find Related Products

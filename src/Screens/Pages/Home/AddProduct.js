@@ -53,7 +53,7 @@ const AddProduct = ({ navigation }) => {
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState();
   const [discount, setDiscount] = useState();
-
+  
   const [selectedCurrency, setSelectedCurrency] = useState();
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [showFeaturesoption, setShowFeaturesOptions] = useState(false);
@@ -61,9 +61,11 @@ const AddProduct = ({ navigation }) => {
   const [shownCategories, setShownCategories] = useState(
     categories?.filter((category) => category.parent == null)
   );
+  const [availableParentCategory,setAvailableparentCategory] = useState([])
+  const [currentParentCategory,setCurrentParentCategory]=useState()
   const [selectedShop, setSelectedShop] = useState();
   const [showShop, setShowShop] = useState(false);
-
+  const maxFilesize=1000*1024
   const Places = ["Normal", "Vip"];
   const currency = ["Rwf", "USD"];
   useEffect(() => {
@@ -76,6 +78,11 @@ const AddProduct = ({ navigation }) => {
 
       quality: 1,
     });
+    console.log("thumbnail",result)
+    if(result.assets[0]?.fileSize >maxFilesize){
+      Alert.alert("Image must not exceed 1mbs")
+      return 
+    }
     if (!result.canceled) {
       setThumbanail(result.assets[0]);
     } else {
@@ -93,9 +100,17 @@ const AddProduct = ({ navigation }) => {
       //   allowsEditing: true,
       allowsMultipleSelection: true,
     });
-    if (!result.canceled) {
-      setOtherImages((previous) => [...previous, ...result.assets]);
-    }
+    console.log(result)
+    result?.assets.forEach(image => {
+      if(image.fileSize>maxFilesize){
+        Alert.alert(image?.fileName + 'Exceded maximum Image size allowed on kaz ni kaz')
+        return
+      }
+      setOtherImages((previous) => [...previous, image]);
+    });
+    // if (!result.canceled) {
+    //   setOtherImages((previous) => [...previous, ...result.assets]);
+    // }
   };
   const ShowCategory = (event) => {
     const y = event.nativeEvent.locationY - 18;
@@ -111,10 +126,10 @@ const AddProduct = ({ navigation }) => {
     }
 
     if (
-      name !== "" &&
-      price !== "" &&
-      choosenCategory != null &&
-      description !== ""
+      name !== "" ||
+      price !== "" ||
+      choosenCategory != null ||
+      description !== "" || !thumbnail 
     ) {
       const result = await dispatch(
         UploadProduct({
@@ -135,6 +150,17 @@ const AddProduct = ({ navigation }) => {
       if (UploadProduct.fulfilled.match(result)) {
         dispatch(FetchWallet());
         dispatch(FetchProduct());
+        // setThumbanail()
+        // setOtherImages([])
+        // setSelectedColors([])
+        // setDescription()
+        // setName("")
+        // setChoosenCategory()
+        // setSelectedCurrency()
+        // setSelectedFeatures()
+        // setSelectedShop()
+        // setSelectedPlace()
+        // setDiscount()
         Toast.show({
           text1: "product Uploaded Successfully",
           type: "success",
@@ -144,7 +170,7 @@ const AddProduct = ({ navigation }) => {
           topOffset: 60,
         });
         navigation.navigate("BottomTab", {
-          screen: "home",
+          screen: "Home",
           params: {
             screen: "Homepage",
           },
@@ -167,14 +193,28 @@ const AddProduct = ({ navigation }) => {
   const handlePersist = (e) => {
     e.stopPropagation();
   };
+  const handleCategoryBackPress=()=>{
+    console.log(currentParentCategory)
+    if(currentParentCategory.parent){
+      setShownCategories(categories?.filter((category) => category.parent == currentParentCategory.parent))
+      setCurrentParentCategory(categories?.find((category) => category.id == currentParentCategory.parent))
+    }
+    else{
+      setShownCategories(categories?.filter((category)=>!category.parent))
+    }
+    // const childCategory = categories.filter(
+    //   (category) => category.parent == parent.id
+    // );
+  }
   const handleCategoryPress = async (parent) => {
     const childCategory = categories.filter(
       (category) => category.parent == parent.id
     );
     if (childCategory.length > 0) {
       setShownCategories(childCategory);
+      setCurrentParentCategory(parent);
     } else {
-      console.log(features);
+      // console.log(features);
       const result = await dispatch(
         fetchFeatures({
           category_id: parent.id,
@@ -219,25 +259,7 @@ const AddProduct = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-        {!profile?.user?.verified ? (
-          <>
-            <View className="flex flex-col items-center justify-center">
-              <Text className="text-xl font-bold text-center">
-                Your Account is not verified yet, please verify it to add
-                products
-              </Text>
-              <Text>
-                To Verify Your account Go to Setting and then Verified
-              </Text>
-              <TouchableOpacity
-                className="py-2 px-6 my-4 rounded-md bg-appColor items-center"
-                onPress={() => navigation.navigate("Settings")}
-              >
-                <Text className="text-white font-bold">Setting</Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        ) : (
+        
           <>
             <View className="flex-1 h-[100%] relative">
               <View
@@ -387,20 +409,20 @@ const AddProduct = ({ navigation }) => {
                             className="w-[100%] py-4 max-h-[90%] overflow-y-scroll"
                             contentContainerStyle={{ paddingVertical: 20 }}
                           >
-                            <View className="w-[80%] mx-auto my-2 flex flex-row justify-between items-center">
-                              <Text className="font-bold ">
-                                Selected The shops of your products
-                              </Text>
-                              <TouchableOpacity
-                                onPress={() => {
-                                  setSelectedShop(null);
-                                  setShowShop(false);
-                                }}
-                                className="bg-amber-500 py-2 px-2 rounded-md "
-                              >
-                                <Text className="font-bold ">Clear</Text>
-                              </TouchableOpacity>
-                            </View>
+                          {Shops?.shops?.length >0?<View className="w-[80%] mx-auto my-2 flex flex-row justify-between items-center">
+                            <Text className="font-bold ">
+                              Select The shop of your product
+                            </Text>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setSelectedShop(null);
+                                setShowShop(false);
+                              }}
+                              className="bg-amber-500 py-2 px-2 rounded-md "
+                            >
+                              <Text className="font-bold ">Clear</Text>
+                            </TouchableOpacity>
+                          </View>:<Text>Yoo have not yet created a shop,So the product will be personlized to your account</Text>}
                             {Shops?.shops?.map((shop, index) => {
                               return (
                                 <TouchableOpacity
@@ -433,26 +455,29 @@ const AddProduct = ({ navigation }) => {
                       style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
                     >
                       <TouchableWithoutFeedback onPress={handlePersist}>
-                        <View className="bg-white h-[50%]  w-full absolute bottom-0 rounded-t-3xl items-center justify-center flex flex-col">
-                          <ScrollView className="w-[100%] py-4 max-h-[90%] overflow-y-scroll">
+                        <View className="bg-white h-[50%] py-5 flex-1  w-full absolute bottom-0 rounded-t-3xl items-center justify-center flex flex-col">
+                          <ScrollView className="w-[100%] flex-1  overflow-y-scroll" stickyHeaderIndices={[0]}>
+                            <View className="flex flex-row items-center justify-between bg-white z-50">
+                            <TouchableOpacity
+                              onPress={() => handleCategoryBackPress()}
+                              className="bg-slate-400 py-2 px-3 rounded-md mx-6 "
+                            >
+                              <Text className="font-bold">Back</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity
                               onPress={() => {
-                                setChoosenCategory();
-                                setCategoryVisible(false);
+                                handleCategoryPress(choosenCategory)
                               }}
-                              className="self-end mx-6 "
+                              className="self-end mx-6 bg-green-700 py-2 px-4 rounded-md"
                             >
-                              <Foundation
-                                name="refresh"
-                                size={35}
-                                color="gray"
-                              />
+                              <Text className="font-bold text-white">Next</Text>
                             </TouchableOpacity>
+                            </View>
                             {shownCategories.map((category, index) => {
                               return (
                                 <TouchableOpacity
-                                  onPress={() => handleCategoryPress(category)}
-                                  className="w-[80%] self-center my-1 px-4 rounded-md py-3 bg-slate-300"
+                                  onPress={() => setChoosenCategory(category)}
+                                  className={`${category==choosenCategory?'bg-appColor':'bg-slate-300'} w-[80%] self-center my-1 px-4 rounded-md py-3 `}
                                   key={index}
                                 >
                                   <Text>{category.name}</Text>
@@ -573,7 +598,7 @@ const AddProduct = ({ navigation }) => {
               <Text className="font-bold ">Upload a Product</Text>
             </TouchableOpacity>
           </>
-        )}
+        
         <Modal
           className="flex-1"
           transparent

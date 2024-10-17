@@ -49,6 +49,7 @@ const Home = () => {
   const { t, i18n } = useTranslation();
   const height = Dimensions.get("screen").height;
   const width = Dimensions.get("screen").width;
+  const [page,setPage]=useState(1)
   const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
   // Function to handle auto-sliding
@@ -99,14 +100,14 @@ const Home = () => {
     }
   }
   useEffect(()=>{
-    dispatch(FetchProduct());
+    dispatch(FetchProduct(page));
     dispatch(FetchCategories());
     dispatch(FetchWallet());
     dispatch(getProfile());
     dispatch(fetchOurAds());
   },[])
   useEffect(() => {
-    dispatch(FetchProduct());
+    dispatch(FetchProduct(page));
     dispatch(FetchCategories());
     dispatch(FetchWallet());
     // dispatch(getProfile());
@@ -128,16 +129,29 @@ const Home = () => {
   const { wallet } = useSelector((state) => state.Wallet);
   // console.log(categories);
   const { profile } = useSelector((state) => state.Account);
-  
+  console.log(products)
   useEffect(() => {
     if (products.length > 0) {
       setVipProducts(products?.filter((product) => product?.place === "Vip"));
     }
   }, [products]);
+  const handleScroll = ({ nativeEvent }) => {
+    const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
+
+    // Calculate if the user is at the bottom of the ScrollView
+    const isCloseToBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 20;
+    
+    if (isCloseToBottom && !loading) {
+      dispatch(FetchProduct(page + 1))
+      setPage((prevPage) => prevPage + 1);
+      
+    }
+  };
   return (
     <ScrollView
       stickyHeaderIndices={[0]}
-      className={`flex-1 ${isDarkMode ? "bg-darkcolor" : null}`}
+      className={`flex-1 relative ${isDarkMode ? "bg-darkcolor" : null}`}
+      onScroll={handleScroll} 
     >
       {/* <Spinner visible={loading} size={30} color={Colors.appColor} /> */}
       {/* <View className="mt-14" /> */}
@@ -227,7 +241,7 @@ const Home = () => {
               <View className="flex flex-row items-center">
                 <Text className="text-blue-600 font-bold">K</Text>
                 <Text className="text-appColor font-bold">A</Text>
-                <Text className="font-bold">Z</Text>
+                <Text className="font-bold">ZI</Text>
               </View>
               <View className="flex flex-row items-center gap-x-1 ml-2">
                 <View className="flex flex-row items-center">
@@ -235,7 +249,7 @@ const Home = () => {
                 </View>
                 <View className="flex flex-row items-center">
                   <Text className="text-blue-600 font-bold">KA</Text>
-                  <Text className="text-gray-700 font-bold">Z</Text>
+                  <Text className="text-gray-700 font-bold">ZI</Text>
                 </View>
               </View>
             </View>
@@ -535,6 +549,20 @@ const Home = () => {
               );
             })}
         </View>}
+        <TouchableOpacity
+        onPress={() => {
+          if (loggedIn) {
+            navigation.navigate("addProduct");
+          } else {
+            navigation.navigate("logins");
+          }
+        }}
+        className="   shadow-md  items-center justify-center"
+        
+        
+      >
+        <Text className="text-lg font-bold text-appColor">Add New Product</Text>
+      </TouchableOpacity>
         <View className="flex flex-row justify-between py-2">
           <Text className={`text-xl font-bold ${isDarkMode && "text-white"}`}>
             Best Sells
@@ -551,6 +579,7 @@ const Home = () => {
           >
             <Text className="text-lg font-bold text-appColor">See All</Text>
           </TouchableOpacity>
+          
         </View>
         {loading?<Skeleton width={width * 0.9} height={height/5} borderRadius={20}></Skeleton>:<View
           className="flex-1 flex flex-row flex-wrap items-center justify-center pb-8"
@@ -632,7 +661,11 @@ const Home = () => {
             navigation.navigate("logins");
           }
         }}
-        className="absolute bottom-9 right-3 rounded-full h-14 w-14 z-50 shadow-md shadow-black bg-appColor items-center justify-center"
+        className="absolute right-3 rounded-full h-14 w-14 z-50 shadow-md shadow-black bg-appColor items-center justify-center"
+        style={{
+          position:"absolute",
+          bottom:height * 0.5
+        }}
       >
         <Feather name="plus" size={40} color="white" />
       </TouchableOpacity>

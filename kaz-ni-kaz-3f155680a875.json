@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "kaz-ni-kaz",
+  "private_key_id": "3f155680a875ecea5ab0dc99c9a37217415106c2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCXTEpujRcF7QCf\ncxMBVsKaB2cY0zrfjJwXA/vXqcflFQPkbkh/UasFKxdzvs9pTvQ5LvYnMf7cslW7\noqWAdGYa17A4fTnKAv9GIe+GEoU1qWriAkZEuSck0mPEXn8egvO9zYFXQUP2xpfI\nhfHiskYKnVlR82uqmNXX2APEMAhNzC2EzjkVGvhX6MsyE03/Mx2RZxKOqfS+kdmg\neggdrCeR7iLgyh9U97pONJ7reYMnWTuMgSoVWgLE6yui6mFrjk6l8LQzWGGnHBt5\nXBM5B893VlxCnOclIFO9qobFmW7Z+2O1PH7CcTm25uriSc8IEjleqQ6RCac+kRyg\nwRYPJSOnAgMBAAECggEAM1gcEE1IKWYnJnVWV0d6reviNF4GpjOhCvx6nFMNN7Q8\niGpWpwJvj8byZAC2gY3eOoOx3FZOn9XTW2RUVvXpaqWUs27nzCLdP48nqm+hjjbq\nwz0zXIIbAxd07QCGkjOthNV3VcWby2TUwKOYFS8bruF8HOAHQzMvqtqvWIZWYxPo\nCU0su23Y7HpiEUg8CtgVgqqiLQjdxS4AVHY5yVQ9+IhsKFyP4drlTRfDzNO7ykt2\nrotyFPffTU5Uyj+PLgJrqhvsAt0a3a1N9Efrslz8i2r7wrekhN6TEWfypqJif9RN\nBLT7KQbxexeopzBsZdHbU2yYEysG4P+Jm7uEnMwjzQKBgQDOg3hsfVwnCSXeD3gI\nMZe3253T8hVakKsSaGojx1iKMEkoBIDy5KJQs87y0IuyDZW3LxSh1PTy2q31xWyR\n9jALe69MZyOuleJSFiENsVfO2lcOUB5MmJJ1KryQ/Ux8q6hn+c0gFf7tUcQME51/\nSx1BaCnBbNAiqVRcHDm5FeGJwwKBgQC7jaJ1fcnIeDaMkM+G2SgI3/EYieMLBDrv\n9gCjO6aP3WmljXtxaqffRoH0dB4xuD/UwSBwvgVw6YYfbiVjJjn0xbFWl4bNLPnE\n8wb+h0JvSEp7xLN1FQWgL+SJvl3XiZCPiHdmYrV03xa05jMiIucbthu3zQOSwIvx\neYGHdJc8TQKBgHxz4HPJDGr96VMskVKmyF7lu/SJdHLyshXS1Pwg22vT85JpPGik\nfmkSI0pTgYxZAXu2pMFuO/vK64Esa+R+r6+L5zWtBmTlMNH1QhAlatxe2o3mnIve\neoyfp6nc7GZJcKDQety2RL4yQ2pfu8+FrejH5DoL4FazIwKrg+HVnOjPAoGAMMyd\nZKyiAAMnTlOva4q9G/IIrTXTWV50Z1M+vzoaEHyvrF+vqsbxfuq9jXlZEd663QST\nCEKo78QTHcJu/+lGUyXNCpbKgEAfjNsfCsLuyj2pA6MefmxF1nQfpqddi2NDtdTw\nHDe6tvoE0nTDATLLpy4u8BfrwhdPUjknNrNjVlECgYBZ9734kU+i2xZ/Ron27JBd\n0L+cmlZe7bETG2WPht/Jvno7DeVkfeTslYH1NZ1RmYR4Yfkp4djfFeKFaqTFKtwU\nE5GMMsa/C/PooPLw+usLTgAcLiJ7jZdlSkvHAwA0S1OI6Q/V5t8TeGRmUEWtv+23\n6wbxUi11mDGY9j6s4R/PKw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "playstore@kaz-ni-kaz.iam.gserviceaccount.com",
+  "client_id": "111141040597743627869",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/playstore%40kaz-ni-kaz.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

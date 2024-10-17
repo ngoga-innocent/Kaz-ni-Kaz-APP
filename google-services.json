@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "139154356857-hut196kfsprvptpro3uoqnma9ojr7agi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ngoga.KazniKaz",
+            "certificate_hash": "83d710ca30dcc0928f77b7643b8eace1ba037793"
+          }
+        },
+        {
           "client_id": "139154356857-n3ljovbiajcgjf6accft7rr7reg0241q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -40,6 +48,13 @@
             {
               "client_id": "139154356857-mpo6g1bva20ou9qln8s6r45t16li0nhp.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "139154356857-ldh7roaea8jrfe0ni4qgbqftmdhk9q0u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ngoga.KazniKaz"
+              }
             }
           ]
         }
@@ -80,6 +95,13 @@
             {
               "client_id": "139154356857-mpo6g1bva20ou9qln8s6r45t16li0nhp.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "139154356857-ldh7roaea8jrfe0ni4qgbqftmdhk9q0u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ngoga.KazniKaz"
+              }
             }
           ]
         }
